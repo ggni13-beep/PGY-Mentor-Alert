@@ -1,14 +1,388 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PGY Mentor Alert</title><style>
-:root{--navy:#17365d;--bg:#f5f7fa;--line:#dbe2ea;--green:#e2f0d9;--yellow:#fff2cc;--orange:#fce4d6;--red:#f4cccc}
-*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,Arial,"Noto Sans TC",sans-serif;background:var(--bg);color:#263238}.app{display:flex;min-height:100vh}aside{width:235px;background:var(--navy);color:white;position:fixed;inset:0 auto 0 0;padding:22px 14px}.brand{font-size:20px;font-weight:800;padding:0 10px 25px}.brand small{display:block;font-size:11px;opacity:.7;margin-top:5px}.nav button{width:100%;padding:12px;border:0;border-radius:9px;background:transparent;color:white;text-align:left;margin:3px 0;cursor:pointer}.nav button.active,.nav button:hover{background:#ffffff20}main{margin-left:235px;width:calc(100% - 235px);padding:28px}h1{margin:0;color:var(--navy);font-size:28px}.sub{color:#667085;font-size:13px;margin-top:5px}.top{display:flex;justify-content:space-between;gap:15px;margin-bottom:20px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card,.tablewrap,.journey{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 7px 22px #17365d10}.card{padding:16px}.label{font-size:12px;color:#667085}.kpi{font-size:28px;font-weight:800;color:var(--navy);margin-top:4px}select,.btn{border:1px solid var(--line);background:white;border-radius:8px;padding:9px 11px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:11px;border-bottom:1px solid #edf0f3;font-size:13px;text-align:left}th{background:#f7f9fc}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700}.g{background:var(--green)}.o{background:var(--orange)}.r{background:var(--red)}.y{background:var(--yellow)}.bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:var(--navy)}.journey{overflow:auto}.jh,.jr{display:grid;grid-template-columns:240px 105px 110px repeat(24,46px) 70px;min-width:1640px}.jh>div,.jr>div{padding:8px 4px;border-right:1px solid #edf0f3;border-bottom:1px solid #edf0f3;font-size:11px;text-align:center}.jh>div{background:var(--navy);color:white;font-weight:700}.jr>div:nth-child(-n+3){text-align:left;padding-left:9px}.mc{min-height:32px;cursor:pointer}.planned{background:var(--yellow);color:#667085}.done{background:var(--green);color:#23732b;font-weight:800}.today{outline:2px solid #c0392b;outline-offset:-2px}.notice{background:#fff8e6;border:1px solid #efd98c;border-radius:10px;padding:11px 13px;margin-bottom:16px;font-size:13px}.task{display:flex;justify-content:space-between;gap:15px;align-items:center;border:1px solid var(--line);padding:11px;border-radius:9px;margin:8px 0}.task small{display:block;color:#667085;margin-top:3px}@media(max-width:900px){aside{width:65px}.brand{font-size:0}.brand small{display:none}.nav button{font-size:0;text-align:center}main{margin-left:65px;width:calc(100% - 65px);padding:16px}.grid{grid-template-columns:repeat(2,1fr)}}
-</style><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script></head><body><div class="app"><aside><div class="brand">PGY Mentor Alert<small>24M Learning Journey</small></div><div class="nav"><button class="active" data-view="overview">📊 計畫主任總覽</button><button data-view="mentor">🧑‍🏫 Mentor Alert</button><button data-view="journey">📅 Learning Journey</button><button data-view="individual">👤 個人PGY</button></div></aside><main><div id="app"></div><p style="font-size:11px;color:#667085;margin-top:25px">Prototype v1｜Excel 資料來源：GitHub /data/PGY_Master.xlsx</p></main></div><script>
+<!doctype html>
+<html lang="zh-Hant">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PGY Mentor Alert</title>
+
+<style>
+:root{
+  --navy:#17365d;
+  --bg:#f5f7fa;
+  --line:#dbe2ea;
+  --green:#e2f0d9;
+  --yellow:#fff2cc;
+  --orange:#fce4d6;
+  --red:#f4cccc
+}
+
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  font-family:Segoe UI,Arial,"Noto Sans TC",sans-serif;
+  background:var(--bg);
+  color:#263238
+}
+
+.app{
+  display:flex;
+  min-height:100vh
+}
+
+aside{
+  width:235px;
+  background:var(--navy);
+  color:white;
+  position:fixed;
+  inset:0 auto 0 0;
+  padding:22px 14px
+}
+
+.brand{
+  font-size:20px;
+  font-weight:800;
+  padding:0 10px 25px
+}
+
+.brand small{
+  display:block;
+  font-size:11px;
+  opacity:.7;
+  margin-top:5px
+}
+
+.nav button{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:white;
+  text-align:left;
+  margin:3px 0;
+  cursor:pointer
+}
+
+.nav button.active,
+.nav button:hover{
+  background:#ffffff20
+}
+
+main{
+  margin-left:235px;
+  width:calc(100% - 235px);
+  padding:28px
+}
+
+h1{
+  margin:0;
+  color:var(--navy);
+  font-size:28px
+}
+
+.sub{
+  color:#667085;
+  font-size:13px;
+  margin-top:5px
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:20px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px
+}
+
+.card,
+.tablewrap,
+.journey{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 7px 22px #17365d10
+}
+
+.card{
+  padding:16px
+}
+
+.label{
+  font-size:12px;
+  color:#667085
+}
+
+.kpi{
+  font-size:28px;
+  font-weight:800;
+  color:var(--navy);
+  margin-top:4px
+}
+
+select,
+.btn{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:8px;
+  padding:9px 11px
+}
+
+.tablewrap{
+  overflow:auto
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:780px
+}
+
+th,
+td{
+  padding:11px;
+  border-bottom:1px solid #edf0f3;
+  font-size:13px;
+  text-align:left
+}
+
+th{
+  background:#f7f9fc
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700
+}
+
+.g{
+  background:var(--green)
+}
+
+.o{
+  background:var(--orange)
+}
+
+.r{
+  background:var(--red)
+}
+
+.y{
+  background:var(--yellow)
+}
+
+.bar{
+  height:8px;
+  background:#edf1f5;
+  border-radius:99px;
+  overflow:hidden
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  background:var(--navy)
+}
+
+.journey{
+  overflow:auto
+}
+
+.jh,
+.jr{
+  display:grid;
+  grid-template-columns:
+    240px
+    105px
+    110px
+    repeat(24,46px)
+    70px;
+  min-width:1640px
+}
+
+.jh>div,
+.jr>div{
+  padding:8px 4px;
+  border-right:1px solid #edf0f3;
+  border-bottom:1px solid #edf0f3;
+  font-size:11px;
+  text-align:center
+}
+
+.jh>div{
+  background:var(--navy);
+  color:white;
+  font-weight:700
+}
+
+.jr>div:nth-child(-n+3){
+  text-align:left;
+  padding-left:9px
+}
+
+.mc{
+  min-height:32px;
+  cursor:pointer
+}
+
+.planned{
+  background:var(--yellow);
+  color:#667085
+}
+
+.done{
+  background:var(--green);
+  color:#23732b;
+  font-weight:800
+}
+
+.today{
+  outline:2px solid #c0392b;
+  outline-offset:-2px
+}
+
+.notice{
+  background:#fff8e6;
+  border:1px solid #efd98c;
+  border-radius:10px;
+  padding:11px 13px;
+  margin-bottom:16px;
+  font-size:13px
+}
+
+.task{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  border:1px solid var(--line);
+  padding:11px;
+  border-radius:9px;
+  margin:8px 0
+}
+
+.task small{
+  display:block;
+  color:#667085;
+  margin-top:3px
+}
+
+@media(max-width:900px){
+
+  aside{
+    width:65px
+  }
+
+  .brand{
+    font-size:0
+  }
+
+  .brand small{
+    display:none
+  }
+
+  .nav button{
+    font-size:0;
+    text-align:center
+  }
+
+  main{
+    margin-left:65px;
+    width:calc(100% - 65px);
+    padding:16px
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr)
+  }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<aside>
+
+<div class="brand">
+PGY Mentor Alert
+<small>24M Learning Journey</small>
+</div>
+
+<div class="nav">
+
+<button class="active" data-view="overview">
+📊 計畫主任總覽
+</button>
+
+<button data-view="mentor">
+🧑‍🏫 Mentor Alert
+</button>
+
+<button data-view="journey">
+📅 Learning Journey
+</button>
+
+<button data-view="individual">
+👤 個人PGY
+</button>
+
+</div>
+
+</aside>
+
+<main>
+
+<div id="app"></div>
+
+<p style="font-size:11px;color:#667085;margin-top:25px">
+Prototype v1｜Excel 資料來源：GitHub /data/PGY_Master.xlsx
+</p>
+
+</main>
+
+</div>
+
+<script>
+
 /* ============================================================
-   PGY Mentor Alert — ORIGINAL UI / GITHUB EXCEL DATA LAYER
-   Rule: UI stays unchanged. Excel only supplies data.
-   GitHub /data/PGY_Master.xlsx → this HTML
-   Sheet structure:
-   00_INDEX = PGY index
-   RTxxx_* = each PGY's 24M Learning Journey
+   PGY Mentor Alert
+   ORIGINAL UI + GITHUB EXCEL DATA
+
+   Excel:
+   /data/PGY_Master.xlsx
+
+   Sheet:
+   00_INDEX
+   BLANK_TEMPLATE
+   RT001_姓名
+   RT002_姓名
+   ...
+
+   00_INDEX:
+   第3列 = 欄位名稱
+   第4列開始 = PGY資料
+
+   個人Sheet:
+   第3列 = PGY基本資料
+   第5列 = Learning Journey Header
+   第8列開始 = Learning Journey
    ============================================================ */
 
 let people=[];
@@ -16,312 +390,1795 @@ let csvJourney=[];
 let csvAssessment=[];
 let csvAlerts=[];
 let excelJourney={};
+
 let selected="";
 let view="overview";
 
-/* Original task definitions retained as fallback/reference only.
-   Learning Journey display is driven by the uploaded Excel workbook. */
+
+/* ------------------------------------------------------------
+   原本 Learning Journey 任務定義
+   保留作為 fallback / 參考
+------------------------------------------------------------ */
+
 const tasks=[
- ["基礎課程","基本氧氣治療與溼氣噴霧治療","1-3"],
- ["基礎課程","低血氧／高二氧化碳／ABG","1-3"],
- ["基礎課程","Auto-PEEP及處置","1-3"],
- ["基礎課程","身體評估","1-3"],
- ["基礎課程","呼吸照護登入系統（VPN）","1-3"],
- ["技術評核","0–3個月技術考","1-3"],
- ["專業課程","臨床成人呼吸生理學","4-12"],
- ["專業課程","胸腔常見疾病介紹","4-12"],
- ["專業課程","小兒氣道照護","4-12"],
- ["專業課程","呼吸器分類／操作／脫離（含ATC）","4-12"],
- ["專業課程","健保相關事宜","4-12"],
- ["技術評核","4–12個月技術評核","4-12"],
- ["專業課程","手術前後呼吸照護","13-24"],
- ["專業課程","COPD呼吸照護","13-24"],
- ["專業課程","ARDS呼吸照護","13-24"],
- ["專業課程","VAP呼吸照護","13-24"],
- ["專業課程","呼吸功能改善","13-24"],
- ["專業課程","HFOV臨床應用","13-24"],
- ["專業課程","iNO臨床應用","13-24"],
- ["專業課程","Prone Position Ventilation","13-24"],
- ["專業課程","Lung Recruitment Management","13-24"],
- ["技術評核","13–24個月技術評核","13-24"],
- ["EPA","Ad-hoc EPA","recurring-2-3"],
- ["評核","Mini-CEX","quarter"],
- ["評核","CBD／PBD","quarter"],
- ["評核","IPD／360°","quarter"],
- ["CCC","CCC能力進度檢視","ccc"],
- ["導師","每月導師面談","monthly"],
- ["Exit","結訓前能力盤點","22-24"],
- ["Exit","Final Assessment／結訓確認","24-24"]
+
+["基礎課程","基本氧氣治療與溼氣噴霧治療","1-3"],
+
+["基礎課程","低血氧／高二氧化碳／ABG","1-3"],
+
+["基礎課程","Auto-PEEP及處置","1-3"],
+
+["基礎課程","身體評估","1-3"],
+
+["基礎課程","呼吸照護登入系統（VPN）","1-3"],
+
+["技術評核","0–3個月技術考","1-3"],
+
+["專業課程","臨床成人呼吸生理學","4-12"],
+
+["專業課程","胸腔常見疾病介紹","4-12"],
+
+["專業課程","小兒氣道照護","4-12"],
+
+["專業課程","呼吸器分類／操作／脫離（含ATC）","4-12"],
+
+["專業課程","健保相關事宜","4-12"],
+
+["技術評核","4–12個月技術評核","4-12"],
+
+["專業課程","手術前後呼吸照護","13-24"],
+
+["專業課程","COPD呼吸照護","13-24"],
+
+["專業課程","ARDS呼吸照護","13-24"],
+
+["專業課程","VAP呼吸照護","13-24"],
+
+["專業課程","呼吸功能改善","13-24"],
+
+["專業課程","HFOV臨床應用","13-24"],
+
+["專業課程","iNO臨床應用","13-24"],
+
+["專業課程","Prone Position Ventilation","13-24"],
+
+["專業課程","Lung Recruitment Management","13-24"],
+
+["技術評核","13–24個月技術評核","13-24"],
+
+["EPA","Ad-hoc EPA","recurring-2-3"],
+
+["評核","Mini-CEX","quarter"],
+
+["評核","CBD／PBD","quarter"],
+
+["評核","IPD／360°","quarter"],
+
+["CCC","CCC能力進度檢視","ccc"],
+
+["導師","每月導師面談","monthly"],
+
+["Exit","結訓前能力盤點","22-24"],
+
+["Exit","Final Assessment／結訓確認","24-24"]
+
 ];
 
+
 const state={};
+
 const save=()=>{};
-const date=s=>new Date(String(s).slice(0,10)+"T00:00:00");
+
+
+function date(s){
+
+if(!s)return null;
+
+return new Date(
+String(s).slice(0,10)+"T00:00:00"
+);
+
+}
+
+
 function pgyMonth(s){
-  if(!s) return 0;
-  const a=date(s), b=new Date();
-  return Math.max(1,Math.min(24,(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth()+1));
+
+if(!s)return 0;
+
+const a=date(s);
+const b=new Date();
+
+return Math.max(
+1,
+Math.min(
+24,
+(b.getFullYear()-a.getFullYear())*12+
+b.getMonth()-a.getMonth()+1
+)
+);
+
 }
-function monthDate(s,m){let x=date(s);x.setMonth(x.getMonth()+m-1);return x}
-function md(x){return x.toLocaleDateString("zh-TW",{year:"numeric",month:"2-digit",day:"2-digit"})}
+
+
+function monthDate(s,m){
+
+let x=date(s);
+
+if(!x)return new Date();
+
+x.setMonth(x.getMonth()+m-1);
+
+return x;
+
+}
+
+
+function md(x){
+
+return x.toLocaleDateString(
+"zh-TW",
+{
+year:"numeric",
+month:"2-digit",
+day:"2-digit"
+}
+);
+
+}
+
+
 function planned(t,m){
-  if(t==="monthly")return true;
-  if(t==="quarter")return m%3===0;
-  if(t==="ccc")return [3,6,12,18,24].includes(m);
-  if(t==="recurring-2-3")return [3,6,9,12,15,18,21,24].includes(m);
-  if(t.includes("-")){let[a,b]=t.split("-").map(Number);return m>=a&&m<=b}
-  return false;
+
+if(t==="monthly")return true;
+
+if(t==="quarter")return m%3===0;
+
+if(t==="ccc")
+return [3,6,12,18,24].includes(m);
+
+if(t==="recurring-2-3")
+return [3,6,9,12,15,18,21,24].includes(m);
+
+if(t.includes("-")){
+
+let[a,b]=t.split("-").map(Number);
+
+return m>=a&&m<=b;
+
 }
-function key(p,t,m){return p+"|"+t+"|"+m}
-function csvStatus(v){return ["☑","✓","完成","Done","done","TRUE","True","1","yes","Yes"].includes(String(v).trim())}
+
+return false;
+
+}
+
+
+function key(p,t,m){
+
+return p+"|"+t+"|"+m;
+
+}
+
+
+function csvStatus(v){
+
+return [
+"☑",
+"✓",
+"✔",
+"完成",
+"Done",
+"done",
+"TRUE",
+"True",
+"1",
+"yes",
+"Yes"
+].includes(
+String(v).trim()
+);
+
+}
+
+
 function isDone(p,t,m){
-  const r=csvJourney.find(x=>String(x.Trainee_ID).trim()===String(p).trim() && String(x.Item).trim()===String(t).trim() && String(x.Month).trim()===String(m));
-  return !!(r && csvStatus(r.Status));
+
+const r=csvJourney.find(x=>
+String(x.Trainee_ID).trim()===String(p).trim() &&
+String(x.Item).trim()===String(t).trim() &&
+String(x.Month).trim()===String(m)
+);
+
+return !!(
+r &&
+csvStatus(r.Status)
+);
+
 }
+
+
 function tempDone(p,t,m){
-  const temp=sessionStorage.getItem("pgy_temp_"+key(p,t,m));
-  return temp==="1" || (temp===null && isDone(p,t,m));
+
+const temp=sessionStorage.getItem(
+"pgy_temp_"+key(p,t,m)
+);
+
+return temp==="1" ||
+(
+temp===null &&
+isDone(p,t,m)
+);
+
 }
+
+
 function toggle(p,t,m){
-  const k=key(p,t,m), next=!tempDone(p,t,m);
-  sessionStorage.setItem("pgy_temp_"+k,next?"1":"0");
-  render();
-}
-function person(){return people.find(p=>p.id===selected)||people[0]}
-function summary(p){
-  let n=0,c=0;
-  tasks.forEach(t=>{
-    for(let m=1;m<=24;m++) if(planned(t[2],m)){
-      n++;
-      if(tempDone(p.id,t[1],m)) c++;
-    }
-  });
-  return {n,c,rate:n?Math.round(c/n*100):0,m:pgyMonth(p.start)}
-}
-function badge(s){return s.rate>=90?'<span class="badge g">🟢 正常</span>':s.rate>=70?'<span class="badge y">🟡 追蹤</span>':'<span class="badge o">🟠 需處理</span>'}
-function sel(){return `<select onchange="selectPerson(this.value)">${people.map(p=>`<option value="${p.id}" ${p.id===selected?"selected":""}>${p.id}｜${p.name}</option>`).join("")}</select>`}
-function csvPersonRows(){
-  return people.map(p=>{
-    const s=summary(p);
-    return `<tr><td><b>${p.id}</b>　${p.name}</td><td>M${String(s.m).padStart(2,"0")}</td><td>${s.m<=3?"Training Course":s.m<=12?"PGY Core":"Advanced PGY"}</td><td><div style="display:flex;gap:8px;align-items:center"><div class="bar" style="width:100px"><span style="width:${s.rate}%"></span></div>${s.rate}%</div></td><td>${badge(s)}</td><td><button class="btn" onclick="selectPerson('${p.id}')">查看</button></td></tr>`
-  }).join("");
-}
-function overview(){
-  let rows=csvPersonRows();
-  let total=people.reduce((a,p)=>a+summary(p).n,0),done=people.reduce((a,p)=>a+summary(p).c,0);
-  return `<div class="top"><div><h1>PGY Mentor Alert</h1><div class="sub">計畫主任總覽｜24個月 Learning Journey</div></div></div>
- <div class="grid"><div class="card"><div class="label">PGY人數</div><div class="kpi">${people.length}</div></div><div class="card"><div class="label">整體完成率</div><div class="kpi">${total?Math.round(done/total*100):0}%</div></div><div class="card"><div class="label">目前月份範圍</div><div class="kpi">M01–M24</div></div><div class="card"><div class="label">資料模式</div><div class="kpi" style="font-size:18px">GitHub Excel</div></div></div>
- <div class="tablewrap"><table><thead><tr><th>PGY</th><th>目前Month</th><th>階段</th><th>完成率</th><th>狀態</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
-function mentor(){
- let p=person(); if(!p)return `<div class="card">尚無學員資料。</div>`;
- let s=summary(p),m=s.m;
- let list=tasks.filter(t=>planned(t[2],m)).map(t=>{
-   const done=tempDone(p.id,t[1],m);
-   return `<div class="task"><div><b>${t[1]}</b><small>${t[0]}｜M${String(m).padStart(2,"0")}｜${md(monthDate(p.start,m))}</small></div><button class="btn" onclick="toggle('${p.id}','${t[1]}',${m})">${done?"☑ 已完成":"☐ 完成"}</button></div>`
- }).join("");
- const alertRows=csvAlerts.filter(x=>String(x.Trainee_ID).trim()===String(p.id).trim());
- const alertHtml=alertRows.length?`<div class="notice"><b>Mentor Alert</b><br>${alertRows.map(x=>`${x.Message||""}${x.Priority?`　[${x.Priority}]`:""}`).join("<br>")}</div>`:"";
- return `<div class="top"><div><h1>Mentor Alert</h1><div class="sub">導師本期工作清單｜資料來自 GitHub Excel</div></div>${sel()}</div><div class="notice"><b>${p.id}｜${p.name}</b>　到職 ${p.start}　→　目前 <b>M${String(m).padStart(2,"0")}</b></div>${alertHtml}<div class="card"><h2>🔔 本期應完成</h2>${list||"<p>目前沒有對應任務。</p>"}</div>`;
-}
-function journey(){
- let p=person(); if(!p)return `<div class="card">尚無學員資料。</div>`;
- let m=pgyMonth(p.start);
- let j=excelJourney[p.id];
 
- // Excel 是唯一資料來源：直接依 Excel 每一格的內容決定
- // 空白＝非應完成項目；☐＝應完成；✓／☑＝已完成。
- let excelItems=j?.items || [];
- let rows=excelItems.map(it=>{
-   let pc=0,dc=0;
-   let c=`<div class="jr"><div><b>${it.item}</b></div><div>${it.category}</div><div>${it.plan}</div>`;
-   for(let mm=1;mm<=24;mm++){
-     const raw=cellText(it.months[mm-1]);
-     const isPlanned=raw!=="";
-     const isDone=excelStatus(raw);
-     if(isPlanned)pc++;
-     if(isDone)dc++;
+const k=key(p,t,m);
 
-     let cls=`mc ${isPlanned?"planned":""} ${isDone?"done":""} ${mm===m?"today":""}`;
-     // 不再自行產生圓形 ○；完全沿用 Excel 的 ☐ / ✓。
-     const mark=isDone?"✓":isPlanned?"☐":"";
-     c+=`<div class="${cls}">${mark}</div>`;
-   }
-   return c+`<div><b>${pc?Math.round(dc/pc*100):0}%</b></div></div>`
- }).join("");
+const next=!tempDone(p,t,m);
 
- let heads="<div class=\"jh\"><div>學習／評核項目</div><div>類別</div><div>計畫時間</div>"+Array.from({length:24},(_,i)=>`<div>M${String(i+1).padStart(2,"0")}</div>`).join("")+"<div>完成率</div></div>";
- return `<div class="top"><div><h1>Learning Journey</h1><div class="sub">24M 工程進度表｜紅框＝目前PGY月份</div></div>${sel()}</div><div class="notice"><b>${p.id}｜${p.name}</b>　到職日 ${p.start}　｜目前 M${String(m).padStart(2,"0")}</div><div class="journey">${heads}${rows}</div>`;
-}
-function individual(){let p=person();if(!p)return `<div class="card">尚無學員資料。</div>`;let s=summary(p);return `<div class="top"><div><h1>個人 PGY</h1><div class="sub">單一學員完整學習歷程</div></div>${sel()}</div><div class="grid"><div class="card"><div class="label">PGY</div><div class="kpi" style="font-size:20px">${p.id}</div>${p.name}</div><div class="card"><div class="label">到職日</div><div class="kpi" style="font-size:18px">${p.start}</div></div><div class="card"><div class="label">目前PGY Month</div><div class="kpi">M${String(s.m).padStart(2,"0")}</div></div><div class="card"><div class="label">完成率</div><div class="kpi">${s.rate}%</div></div></div>${journey()}`}
-function selectPerson(id){selected=id;state.selected=id;save();if(view==="overview")view="individual";render()}
-function render(){document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));document.getElementById("app").innerHTML=view==="overview"?overview():view==="mentor"?mentor():view==="journey"?journey():individual()}
-document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{view=b.dataset.view;render()});
-
-/* ---------- GitHub Excel loader ---------- */
-/*
-  SheetJS 只負責讀取 Excel，不改變原本 UI。
-  GitHub Pages 讀取同一 repo 的 /data/PGY_Master.xlsx。
-*/
-const EXCEL_URL="./data/PGY_Master.xlsx";
-
-function excelDateToISO(v){
-  if(v instanceof Date && !isNaN(v)) return v.toISOString().slice(0,10);
-  if(typeof v==="number"){
-    // Excel serial date
-    const d=new Date(Date.UTC(1899,11,30)+v*86400000);
-    return d.toISOString().slice(0,10);
-  }
-  const s=String(v??"").trim();
-  if(!s) return "";
-  const m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-  if(m) return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
-  const d=new Date(s);
-  return isNaN(d)?"":d.toISOString().slice(0,10);
-}
-
-function cellText(v){
-  if(v===null || v===undefined) return "";
-  return String(v).trim();
-}
-
-function sheetRows(ws){
-  return XLSX.utils.sheet_to_json(ws,{header:1,defval:"",raw:true});
-}
-
-function parseIndexSheet(ws){
-  const rows=sheetRows(ws);
-  // 00_INDEX 第3列是標題，第4列起是資料
-  const headerIndex=rows.findIndex(r=>cellText(r[0])==="PGY編號" && cellText(r[1])==="姓名");
-  if(headerIndex<0) return [];
-  return rows.slice(headerIndex+1).filter(r=>cellText(r[0])).map(r=>({
-    id:cellText(r[0]),
-    name:cellText(r[1]),
-    start:excelDateToISO(r[2]),
-    sheet:cellText(r[3]),
-    role:"PGY",
-    status:cellText(r[5])||"在訓"
-  }));
-}
-
-function parseJourneySheet(ws, fallbackId="", fallbackName=""){
-  const rows=sheetRows(ws);
-  if(rows.length<8) return null;
-
-  const id=cellText(rows[2]?.[1]) || fallbackId;
-  const name=cellText(rows[2]?.[4]) || fallbackName;
-  const start=excelDateToISO(rows[2]?.[7]);
-
-  const headerRow=rows.findIndex(r=>cellText(r[0])==="學習／評核項目" && cellText(r[3])==="M01");
-  if(headerRow<0) return {id,name,start,items:[]};
-
-  const items=[];
-  for(let i=headerRow+1;i<rows.length;i++){
-    const r=rows[i];
-    const item=cellText(r[0]);
-    if(!item || item==="對應日期") continue;
-
-    const category=cellText(r[1]);
-    const plan=cellText(r[2]);
-    if(!category && !plan) continue;
-
-    const months=[];
-    for(let m=1;m<=24;m++){
-      months.push(cellText(r[3+(m-1)]));
-    }
-    items.push({item,category,plan,months});
-  }
-  return {id,name,start,items};
-}
-
-function excelStatus(v){
-  const s=cellText(v);
-  return ["✓","☑","✔","完成","Done","done","TRUE","True","1","yes","Yes"].includes(s);
-}
-
-function buildJourneyData(personId){
-  const j=excelJourney[personId];
-  if(!j) return [];
-  const out=[];
-  j.items.forEach(it=>{
-    for(let m=1;m<=24;m++){
-      const v=it.months[m-1];
-      if(v!==""){
-        out.push({
-          Trainee_ID:personId,
-          Item:it.item,
-          Month:String(m),
-          Status:excelStatus(v)?"✓":v,
-          Category:it.category,
-          Plan:it.plan
-        });
-      }
-    }
-  });
-  return out;
-}
-
-async function bootExcel(){
-  try{
-    if(typeof XLSX==="undefined") throw new Error("SheetJS 尚未載入");
-
-    const r=await fetch(EXCEL_URL+"?v="+Date.now(),{cache:"no-store"});
-    if(!r.ok) throw new Error("PGY_Master.xlsx HTTP "+r.status);
-
-    const ab=await r.arrayBuffer();
-    const wb=XLSX.read(ab,{type:"array",cellDates:true});
-
-    const indexWs=wb.Sheets["00_INDEX"];
-    if(!indexWs) throw new Error("Excel 缺少 00_INDEX 分頁");
-
-    const indexPeople=parseIndexSheet(indexWs);
-
-    excelJourney={};
-    wb.SheetNames.forEach(sheetName=>{
-      if(sheetName==="00_INDEX" || sheetName==="BLANK_TEMPLATE") return;
-      const j=parseJourneySheet(wb.Sheets[sheetName]);
-      if(j && j.id) excelJourney[j.id]=j;
-    });
-
-    people=indexPeople.map(p=>{
-      const j=excelJourney[p.id];
-      return {
-        id:p.id,
-        name:p.name,
-        start:p.start || j?.start || "",
-        end:"",
-        role:p.role,
-        status:p.status,
-        sheet:p.sheet
-      };
-    }).filter(p=>p.id);
-
-    // 若 00_INDEX 未列出，但個人分頁存在，也自動納入
-    Object.values(excelJourney).forEach(j=>{
-      if(j.id && !people.some(p=>p.id===j.id)){
-        people.push({
-          id:j.id,name:j.name,start:j.start,end:"",
-          role:"PGY",status:"在訓"
-        });
-      }
-    });
-
-    csvJourney=[];
-    people.forEach(p=>{ csvJourney.push(...buildJourneyData(p.id)); });
-
-    csvAssessment=[];
-    csvAlerts=[];
-
-    selected=selected&&people.some(p=>p.id===selected)?selected:(people[0]?.id||"");
-    render();
-  }catch(e){
-    console.error("GitHub Excel loading failed:",e);
-    // Excel 讀取失敗時仍保留原本 UI，不讓畫面消失。
-    render();
-  }
-}
+sessionStorage.setItem(
+"pgy_temp_"+k,
+next?"1":"0"
+);
 
 render();
+
+}
+
+
+function person(){
+
+return people.find(
+p=>p.id===selected
+)||people[0];
+
+}
+
+
+function summary(p){
+
+let n=0;
+let c=0;
+
+tasks.forEach(t=>{
+
+for(let m=1;m<=24;m++){
+
+if(planned(t[2],m)){
+
+n++;
+
+if(tempDone(p.id,t[1],m))
+c++;
+
+}
+
+}
+
+});
+
+return{
+
+n,
+c,
+rate:n?Math.round(c/n*100):0,
+m:pgyMonth(p.start)
+
+};
+
+}
+
+
+function badge(s){
+
+return s.rate>=90
+?'<span class="badge g">🟢 正常</span>'
+:s.rate>=70
+?'<span class="badge y">🟡 追蹤</span>'
+:'<span class="badge o">🟠 需處理</span>';
+
+}
+
+
+function sel(){
+
+return `
+<select onchange="selectPerson(this.value)">
+
+${people.map(p=>`
+
+<option
+value="${p.id}"
+${p.id===selected?"selected":""}
+>
+${p.id}｜${p.name}
+</option>
+
+`).join("")}
+
+</select>
+`;
+
+}
+
+
+/* ------------------------------------------------------------
+   Overview
+------------------------------------------------------------ */
+
+function csvPersonRows(){
+
+return people.map(p=>{
+
+const s=summary(p);
+
+return `
+<tr>
+
+<td>
+<b>${p.id}</b>　${p.name}
+</td>
+
+<td>
+M${String(s.m).padStart(2,"0")}
+</td>
+
+<td>
+${s.m<=3
+?"Training Course"
+:s.m<=12
+?"PGY Core"
+:"Advanced PGY"}
+</td>
+
+<td>
+
+<div style="
+display:flex;
+gap:8px;
+align-items:center
+">
+
+<div
+class="bar"
+style="width:100px"
+>
+
+<span style="
+width:${s.rate}%
+"></span>
+
+</div>
+
+${s.rate}%
+
+</div>
+
+</td>
+
+<td>
+${badge(s)}
+</td>
+
+<td>
+
+<button
+class="btn"
+onclick="selectPerson('${p.id}')"
+>
+查看
+</button>
+
+</td>
+
+</tr>
+`;
+
+}).join("");
+
+}
+
+
+function overview(){
+
+let rows=csvPersonRows();
+
+let total=people.reduce(
+(a,p)=>a+summary(p).n,
+0
+);
+
+let done=people.reduce(
+(a,p)=>a+summary(p).c,
+0
+);
+
+return `
+
+<div class="top">
+
+<div>
+
+<h1>
+PGY Mentor Alert
+</h1>
+
+<div class="sub">
+計畫主任總覽｜24個月 Learning Journey
+</div>
+
+</div>
+
+</div>
+
+
+<div class="grid">
+
+<div class="card">
+
+<div class="label">
+PGY人數
+</div>
+
+<div class="kpi">
+${people.length}
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+整體完成率
+</div>
+
+<div class="kpi">
+${total?Math.round(done/total*100):0}%
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+目前月份範圍
+</div>
+
+<div class="kpi">
+M01–M24
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+資料模式
+</div>
+
+<div
+class="kpi"
+style="font-size:18px"
+>
+GitHub Excel
+</div>
+
+</div>
+
+</div>
+
+
+<div class="tablewrap">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>PGY</th>
+<th>目前Month</th>
+<th>階段</th>
+<th>完成率</th>
+<th>狀態</th>
+<th></th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${rows}
+
+</tbody>
+
+</table>
+
+</div>
+
+`;
+
+}
+
+
+/* ------------------------------------------------------------
+   Mentor Alert
+------------------------------------------------------------ */
+
+function mentor(){
+
+let p=person();
+
+if(!p)
+return `<div class="card">尚無學員資料。</div>`;
+
+let s=summary(p);
+
+let m=s.m;
+
+let list=tasks
+.filter(t=>planned(t[2],m))
+.map(t=>{
+
+const done=tempDone(
+p.id,
+t[1],
+m
+);
+
+return `
+
+<div class="task">
+
+<div>
+
+<b>
+${t[1]}
+</b>
+
+<small>
+${t[0]}
+｜
+M${String(m).padStart(2,"0")}
+｜
+${md(monthDate(p.start,m))}
+</small>
+
+</div>
+
+<button
+class="btn"
+onclick="toggle('${p.id}','${t[1]}',${m})"
+>
+${done?"☑ 已完成":"☐ 完成"}
+</button>
+
+</div>
+
+`;
+
+}).join("");
+
+
+const alertRows=csvAlerts.filter(
+x=>
+String(x.Trainee_ID).trim()===
+String(p.id).trim()
+);
+
+
+const alertHtml=alertRows.length
+?
+`
+<div class="notice">
+
+<b>Mentor Alert</b>
+
+<br>
+
+${alertRows.map(x=>
+`${x.Message||""}
+${x.Priority?`　[${x.Priority}]`:""}`
+).join("<br>")}
+
+</div>
+`
+:"";
+
+
+return `
+
+<div class="top">
+
+<div>
+
+<h1>
+Mentor Alert
+</h1>
+
+<div class="sub">
+導師本期工作清單｜資料來自 GitHub Excel
+</div>
+
+</div>
+
+${sel()}
+
+</div>
+
+
+<div class="notice">
+
+<b>
+${p.id}｜${p.name}
+</b>
+
+　到職 ${p.start}
+
+　→　目前
+
+<b>
+M${String(m).padStart(2,"0")}
+</b>
+
+</div>
+
+
+${alertHtml}
+
+
+<div class="card">
+
+<h2>
+🔔 本期應完成
+</h2>
+
+${list||"<p>目前沒有對應任務。</p>"}
+
+</div>
+
+`;
+
+}
+
+
+/* ------------------------------------------------------------
+   Learning Journey
+------------------------------------------------------------ */
+
+function journey(){
+
+let p=person();
+
+if(!p)
+return `<div class="card">尚無學員資料。</div>`;
+
+let m=pgyMonth(p.start);
+
+let j=excelJourney[p.id];
+
+let excelItems=j?.items||[];
+
+
+let rows=excelItems.map(it=>{
+
+let pc=0;
+let dc=0;
+
+
+let c=`
+
+<div class="jr">
+
+<div>
+<b>
+${it.item}
+</b>
+</div>
+
+<div>
+${it.category}
+</div>
+
+<div>
+${it.plan}
+</div>
+
+`;
+
+
+for(let mm=1;mm<=24;mm++){
+
+const raw=cellText(
+it.months[mm-1]
+);
+
+const isPlanned=raw!=="";
+
+const isDone=excelStatus(raw);
+
+
+if(isPlanned)
+pc++;
+
+if(isDone)
+dc++;
+
+
+/*
+   重要：
+   不自行產生 ○。
+   Excel：
+   空白 = 空白
+   ☐ = 應完成
+   ☑ / ✓ = 已完成
+*/
+
+let cls=
+`mc
+${isPlanned?"planned":""}
+${isDone?"done":""}
+${mm===m?"today":""}`;
+
+
+let mark="";
+
+if(isDone){
+
+mark="☑";
+
+}else if(isPlanned){
+
+mark="☐";
+
+}
+
+
+c+=`
+
+<div
+class="${cls}"
+title="${raw}"
+>
+${mark}
+</div>
+
+`;
+
+}
+
+
+return c+
+
+`
+
+<div>
+<b>
+${pc?Math.round(dc/pc*100):0}%
+</b>
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+
+let heads=`
+
+<div class="jh">
+
+<div>
+學習／評核項目
+</div>
+
+<div>
+類別
+</div>
+
+<div>
+計畫時間
+</div>
+
+${
+Array.from(
+{length:24},
+(_,i)=>
+`<div>M${String(i+1).padStart(2,"0")}</div>`
+).join("")
+}
+
+<div>
+完成率
+</div>
+
+</div>
+
+`;
+
+
+return `
+
+<div class="top">
+
+<div>
+
+<h1>
+Learning Journey
+</h1>
+
+<div class="sub">
+24M 工程進度表｜紅框＝目前PGY月份
+</div>
+
+</div>
+
+${sel()}
+
+</div>
+
+
+<div class="notice">
+
+<b>
+${p.id}｜${p.name}
+</b>
+
+　到職日 ${p.start}
+
+　｜目前
+
+M${String(m).padStart(2,"0")}
+
+</div>
+
+
+<div class="journey">
+
+${heads}
+
+${rows}
+
+</div>
+
+`;
+
+}
+
+
+/* ------------------------------------------------------------
+   Individual PGY
+------------------------------------------------------------ */
+
+function individual(){
+
+let p=person();
+
+if(!p)
+return `<div class="card">尚無學員資料。</div>`;
+
+let s=summary(p);
+
+return `
+
+<div class="top">
+
+<div>
+
+<h1>
+個人 PGY
+</h1>
+
+<div class="sub">
+單一學員完整學習歷程
+</div>
+
+</div>
+
+${sel()}
+
+</div>
+
+
+<div class="grid">
+
+
+<div class="card">
+
+<div class="label">
+PGY
+</div>
+
+<div
+class="kpi"
+style="font-size:20px"
+>
+${p.id}
+</div>
+
+${p.name}
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+到職日
+</div>
+
+<div
+class="kpi"
+style="font-size:18px"
+>
+${p.start}
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+目前PGY Month
+</div>
+
+<div class="kpi">
+M${String(s.m).padStart(2,"0")}
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">
+完成率
+</div>
+
+<div class="kpi">
+${s.rate}%
+</div>
+
+</div>
+
+
+</div>
+
+
+${journey()}
+
+`;
+
+}
+
+
+function selectPerson(id){
+
+selected=id;
+
+state.selected=id;
+
+save();
+
+if(view==="overview")
+view="individual";
+
+render();
+
+}
+
+
+function render(){
+
+document
+.querySelectorAll(".nav button")
+.forEach(b=>
+b.classList.toggle(
+"active",
+b.dataset.view===view
+)
+);
+
+
+document.getElementById("app").innerHTML=
+
+view==="overview"
+?overview()
+:view==="mentor"
+?mentor()
+:view==="journey"
+?journey()
+:individual();
+
+}
+
+
+/* ------------------------------------------------------------
+   Excel Utilities
+------------------------------------------------------------ */
+
+function cellText(v){
+
+if(v===null || v===undefined)
+return "";
+
+return String(v).trim();
+
+}
+
+
+function excelDateToISO(v){
+
+if(v instanceof Date && !isNaN(v)){
+
+return v.toISOString().slice(0,10);
+
+}
+
+
+if(typeof v==="number"){
+
+const d=new Date(
+Date.UTC(1899,11,30)+
+v*86400000
+);
+
+return d.toISOString().slice(0,10);
+
+}
+
+
+const s=String(v??"").trim();
+
+if(!s)
+return "";
+
+
+let m=s.match(
+/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/
+);
+
+if(m){
+
+return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+
+}
+
+
+const d=new Date(s);
+
+return isNaN(d)
+?""
+:d.toISOString().slice(0,10);
+
+}
+
+
+function sheetRows(ws){
+
+return XLSX.utils.sheet_to_json(
+ws,
+{
+header:1,
+defval:"",
+raw:true
+}
+);
+
+}
+
+
+/* ------------------------------------------------------------
+   00_INDEX
+
+   你的 Excel：
+
+   第1列：標題
+   第2列：空白
+   第3列：
+   PGY編號｜姓名｜到職日｜分頁｜用途｜狀態
+
+   第4列開始：
+   RT001...
+------------------------------------------------------------ */
+
+function parseIndexSheet(ws){
+
+const rows=sheetRows(ws);
+
+
+const headerIndex=rows.findIndex(r=>{
+
+const a=cellText(r[0])
+.replace(/\s/g,"");
+
+const b=cellText(r[1])
+.replace(/\s/g,"");
+
+return(
+a==="PGY編號" &&
+b==="姓名"
+);
+
+});
+
+
+if(headerIndex<0){
+
+console.error(
+"00_INDEX 找不到 PGY編號 / 姓名"
+);
+
+return [];
+
+}
+
+
+return rows
+.slice(headerIndex+1)
+.filter(r=>cellText(r[0]))
+.map(r=>({
+
+id:cellText(r[0]),
+
+name:cellText(r[1]),
+
+start:excelDateToISO(r[2]),
+
+sheet:cellText(r[3]),
+
+role:"PGY",
+
+status:cellText(r[5])||"目前學員"
+
+}))
+.filter(p=>p.id);
+
+}
+
+
+/* ------------------------------------------------------------
+   個人 PGY Sheet
+
+   你的 Excel：
+
+   第3列：
+   PGY編號 | RT001 | | 學員姓名 | 林書暄 | | 到職日 | 日期
+
+   第5列：
+   學習／評核項目 | 類別 | 計畫時間 | M01 | M02 ...
+------------------------------------------------------------ */
+
+function parseJourneySheet(
+ws,
+fallbackId="",
+fallbackName=""
+){
+
+const rows=sheetRows(ws);
+
+
+if(rows.length<8)
+return null;
+
+
+const id=
+cellText(rows[2]?.[1])
+||
+fallbackId;
+
+
+const name=
+cellText(rows[2]?.[4])
+||
+fallbackName;
+
+
+const start=
+excelDateToISO(rows[2]?.[7]);
+
+
+/* 找真正的 Learning Journey Header */
+
+const headerRow=rows.findIndex(r=>
+
+cellText(r[0])
+.replace(/\s/g,"")
+==="學習／評核項目"
+
+&&
+
+cellText(r[3])
+.replace(/\s/g,"")
+==="M01"
+
+);
+
+
+if(headerRow<0){
+
+return{
+id,
+name,
+start,
+items:[]
+};
+
+}
+
+
+const items=[];
+
+
+for(
+let i=headerRow+1;
+i<rows.length;
+i++
+){
+
+const r=rows[i];
+
+const item=cellText(r[0]);
+
+
+/*
+   對應日期不是 Learning Journey 項目
+*/
+
+if(
+!item ||
+item==="對應日期"
+)
+continue;
+
+
+const category=
+cellText(r[1]);
+
+
+const plan=
+cellText(r[2]);
+
+
+if(!category && !plan)
+continue;
+
+
+const months=[];
+
+
+for(
+let m=1;
+m<=24;
+m++
+){
+
+months.push(
+cellText(r[3+(m-1)])
+);
+
+}
+
+
+items.push({
+
+item,
+category,
+plan,
+months
+
+});
+
+}
+
+
+return{
+
+id,
+name,
+start,
+items
+
+};
+
+}
+
+
+/* ------------------------------------------------------------
+   Excel status
+------------------------------------------------------------ */
+
+function excelStatus(v){
+
+const s=cellText(v);
+
+
+/*
+   Excel 中：
+   ☑ = 已完成
+   ✓ = 已完成
+   ✔ = 已完成
+*/
+
+return [
+
+"☑",
+"✓",
+"✔",
+"完成",
+"Done",
+"done",
+"TRUE",
+"True",
+"1",
+"yes",
+"Yes"
+
+].includes(s);
+
+}
+
+
+/* ------------------------------------------------------------
+   建立 Journey data
+------------------------------------------------------------ */
+
+function buildJourneyData(personId){
+
+const j=excelJourney[personId];
+
+if(!j)
+return [];
+
+
+const out=[];
+
+
+j.items.forEach(it=>{
+
+for(
+let m=1;
+m<=24;
+m++
+){
+
+const v=it.months[m-1];
+
+
+if(v!==""){
+
+out.push({
+
+Trainee_ID:personId,
+
+Item:it.item,
+
+Month:String(m),
+
+Status:
+excelStatus(v)
+?"✓"
+:v,
+
+Category:it.category,
+
+Plan:it.plan
+
+});
+
+}
+
+}
+
+});
+
+
+return out;
+
+}
+
+
+/* ------------------------------------------------------------
+   GitHub Excel Loader
+
+   這裡是這次修正版的核心。
+
+   依序嘗試：
+
+   1. GitHub Pages 相對路徑
+   2. GitHub Pages 絕對路徑
+   3. GitHub Raw
+------------------------------------------------------------ */
+
+const EXCEL_URLS=[
+
+"./data/PGY_Master.xlsx",
+
+"/PGY-Mentor-Alert/data/PGY_Master.xlsx",
+
+"https://ggni13-beep.github.io/PGY-Mentor-Alert/data/PGY_Master.xlsx",
+
+"https://raw.githubusercontent.com/ggni13-beep/PGY-Mentor-Alert/main/data/PGY_Master.xlsx"
+
+];
+
+
+async function loadExcelFile(){
+
+let lastError=null;
+
+
+for(
+const url of EXCEL_URLS
+){
+
+try{
+
+console.log(
+"嘗試讀取 Excel：",
+url
+);
+
+
+const response=
+await fetch(
+url+"?v="+Date.now(),
+{
+cache:"no-store"
+}
+);
+
+
+if(response.ok){
+
+console.log(
+"Excel 讀取成功：",
+url
+);
+
+return await response.arrayBuffer();
+
+}
+
+
+lastError=
+new Error(
+"HTTP "+response.status+
+"："+url
+);
+
+
+}catch(err){
+
+lastError=err;
+
+}
+
+}
+
+
+throw(
+lastError ||
+new Error(
+"PGY_Master.xlsx 無法讀取"
+)
+);
+
+}
+
+
+/* ------------------------------------------------------------
+   Boot Excel
+------------------------------------------------------------ */
+
+async function bootExcel(){
+
+try{
+
+if(typeof XLSX==="undefined"){
+
+throw new Error(
+"SheetJS 尚未載入"
+);
+
+}
+
+
+/* 讀取 Excel */
+
+const ab=
+await loadExcelFile();
+
+
+/* 解析 Workbook */
+
+const wb=
+XLSX.read(
+ab,
+{
+type:"array",
+cellDates:true
+}
+);
+
+
+console.log(
+"Excel Sheet：",
+wb.SheetNames
+);
+
+
+/* --------------------------------------------------------
+   00_INDEX
+-------------------------------------------------------- */
+
+const indexWs=
+wb.Sheets["00_INDEX"];
+
+
+if(!indexWs){
+
+throw new Error(
+"Excel 缺少 00_INDEX 分頁"
+);
+
+}
+
+
+const indexPeople=
+parseIndexSheet(indexWs);
+
+
+if(!indexPeople.length){
+
+throw new Error(
+"00_INDEX 找不到 PGY 資料"
+);
+
+}
+
+
+/* --------------------------------------------------------
+   個人 PGY Sheet
+-------------------------------------------------------- */
+
+excelJourney={};
+
+
+wb.SheetNames.forEach(
+sheetName=>{
+
+if(
+sheetName==="00_INDEX" ||
+sheetName==="BLANK_TEMPLATE"
+)
+return;
+
+
+const ws=
+wb.Sheets[sheetName];
+
+
+const j=
+parseJourneySheet(ws);
+
+
+if(
+j &&
+j.id
+){
+
+excelJourney[j.id]=j;
+
+}
+
+}
+);
+
+
+/* --------------------------------------------------------
+   建立 people
+-------------------------------------------------------- */
+
+people=
+indexPeople
+.map(p=>{
+
+const j=
+excelJourney[p.id];
+
+
+return{
+
+id:p.id,
+
+name:p.name,
+
+start:
+p.start ||
+j?.start ||
+"",
+
+end:"",
+
+role:p.role||"PGY",
+
+status:
+p.status||
+"目前學員",
+
+sheet:p.sheet
+
+};
+
+})
+.filter(
+p=>p.id && p.name
+);
+
+
+/* --------------------------------------------------------
+   如果 00_INDEX 沒有列出，但個人 Sheet 存在
+   也自動加入
+-------------------------------------------------------- */
+
+Object
+.values(excelJourney)
+.forEach(j=>{
+
+if(
+j.id &&
+!people.some(
+p=>p.id===j.id
+)
+){
+
+people.push({
+
+id:j.id,
+
+name:j.name||j.id,
+
+start:j.start||"",
+
+end:"",
+
+role:"PGY",
+
+status:"在訓"
+
+});
+
+}
+
+});
+
+
+/* --------------------------------------------------------
+   Journey data
+-------------------------------------------------------- */
+
+csvJourney=[];
+
+
+people.forEach(
+p=>{
+
+csvJourney.push(
+...buildJourneyData(p.id)
+);
+
+}
+);
+
+
+/* --------------------------------------------------------
+   Assessment / Alert
+-------------------------------------------------------- */
+
+csvAssessment=[];
+
+csvAlerts=[];
+
+
+/* --------------------------------------------------------
+   預設選擇第一位 PGY
+-------------------------------------------------------- */
+
+selected=
+selected &&
+people.some(
+p=>p.id===selected
+)
+?
+selected
+:
+(
+people[0]?.id||
+""
+);
+
+
+/* --------------------------------------------------------
+   Render
+-------------------------------------------------------- */
+
+console.log(
+"PGY Excel 載入完成：",
+people.length,
+"人"
+);
+
+
+console.log(
+"PGY 名單：",
+people.map(
+p=>p.id+"｜"+p.name
+)
+);
+
+
+render();
+
+
+}catch(e){
+
+console.error(
+"GitHub Excel loading failed:",
+e
+);
+
+
+/*
+   不讓 UI 消失。
+   如果 Excel 暫時無法讀取，
+   保留原本畫面。
+*/
+
+render();
+
+}
+
+}
+
+
+/* ------------------------------------------------------------
+   Navigation
+------------------------------------------------------------ */
+
+document
+.querySelectorAll(".nav button")
+.forEach(
+b=>{
+
+b.onclick=()=>{
+
+view=b.dataset.view;
+
+render();
+
+};
+
+}
+);
+
+
+/* ------------------------------------------------------------
+   Initial render
+------------------------------------------------------------ */
+
+render();
+
 bootExcel();
+
 </script>
-</body></html>
+
+</body>
+</html>
