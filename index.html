@@ -158,10 +158,27 @@ function toggle(p,t,m){
 }
 function person(){return people.find(p=>p.id===selected)||people[0]}
 function summary(p){
- const rr=csvJourney.filter(x=>x.Trainee_ID===p.id);
- const n=rr.length;
- const c=rr.filter(x=>csvStatus(x.Status)).length;
- return {n,c,rate:n?Math.round(c/n*100):0,m:pgyMonth(p.start)}
+  const m=pgyMonth(p.start);
+  let n=0,c=0;
+
+  tasks.forEach(t=>{
+    for(let mm=1;mm<=m;mm++){
+      if(planned(t[2],mm)){
+        n++;
+
+        if(tempDone(p.id,t[1],mm)){
+          c++;
+        }
+      }
+    }
+  });
+
+  return {
+    n,
+    c,
+    rate:n?Math.round(c/n*100):0,
+    m
+  };
 }
 function badge(s){return s.rate>=90?'<span class="badge g">🟢 正常</span>':s.rate>=70?'<span class="badge y">🟡 追蹤</span>':'<span class="badge o">🟠 需處理</span>'}
 function sel(){return `<select onchange="selectPerson(this.value)">${people.map(p=>`<option value="${p.id}" ${p.id===selected?"selected":""}>${p.id}｜${p.name}</option>`).join("")}</select>`}
