@@ -1,0 +1,3 @@
+﻿Trainee_ID,Alert_Type,Message,Priority,Status
+RT001,Training,本月有應完成訓練項目,Medium,Open
+RT002,Assessment,DOPS 即將到期,High,Open
