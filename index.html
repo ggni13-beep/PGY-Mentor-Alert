@@ -195,7 +195,7 @@ function mentor(){
  const list=tasks.filter(t=>planned(t[2],m)).map(t=>{const done=tempDone(p.id,t[1],m);return `<div class="task"><div><b>${t[1]}</b><small>${t[0]}｜M${String(m).padStart(2,"0")}｜${md(monthDate(p.start,m))}</small></div><button class="btn" onclick="toggle('${p.id}','${t[1]}',${m})">${done?"☑ 已完成":"☐ 完成"}</button></div>`}).join("");
  const ar=csvAlerts.filter(x=>x.Trainee_ID===p.id);
  const alertHtml=ar.length?`<div class="notice"><b>Mentor Alert</b><br>${ar.map(x=>`${x.Message||""}${x.Priority?`　[${x.Priority}]`:""}`).join("<br>")}</div>`:"";
- return `<div class="top"><div><h1>Mentor Alert</h1><div class="sub">導師本期工作清單｜CSV 資料</div></div>${sel()}</div><div class="notice"><b>${p.id}｜${p.name}</b>　到職 ${p.start}　→　目前 <b>M${String(m).padStart(2,"0")}</b></div>${alertHtml}<div class="card"><h2>🔔 本期應完成</h2>${list||"<p>目前沒有對應任務。</p>"}</div>`;
+ return `<div class="top"><div><h1>Mentor Alert</h1><div class="sub">導師本期工作清單｜CSV 資料</div></div>${sel()}</div><div class="notice"><b>${p.id}｜${p.name}</b>　到職 ${p.start}　→　目前 <b>M${String(m).padStart(2,"0")}</b></div><div class="card"><h2>🔔 本期應完成</h2>${list||"<p>目前沒有對應任務。</p>"}</div>`;
 }
 function journey(){
  const p=person();if(!p)return `<div class="card">尚無學員資料。</div>`;
