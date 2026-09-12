@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="zh-Hant">
-
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PGY Mentor Alert</title>
+
+<!-- SheetJS：讓網頁可以直接讀取 GitHub 上的 Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 :root{
@@ -14,23 +16,26 @@
   --green:#e2f0d9;
   --yellow:#fff2cc;
   --orange:#fce4d6;
-  --red:#f4cccc
+  --red:#f4cccc;
+  --today:#c0392b;
+  --text:#263238;
+  --muted:#667085;
 }
 
 *{
-  box-sizing:border-box
+  box-sizing:border-box;
 }
 
 body{
   margin:0;
   font-family:Segoe UI,Arial,"Noto Sans TC",sans-serif;
   background:var(--bg);
-  color:#263238
+  color:var(--text);
 }
 
 .app{
   display:flex;
-  min-height:100vh
+  min-height:100vh;
 }
 
 aside{
@@ -39,20 +44,20 @@ aside{
   color:white;
   position:fixed;
   inset:0 auto 0 0;
-  padding:22px 14px
+  padding:22px 14px;
 }
 
 .brand{
   font-size:20px;
   font-weight:800;
-  padding:0 10px 25px
+  padding:0 10px 25px;
 }
 
 .brand small{
   display:block;
   font-size:11px;
   opacity:.7;
-  margin-top:5px
+  margin-top:5px;
 }
 
 .nav button{
@@ -64,44 +69,49 @@ aside{
   color:white;
   text-align:left;
   margin:3px 0;
-  cursor:pointer
+  cursor:pointer;
+  font-size:13px;
 }
 
 .nav button.active,
 .nav button:hover{
-  background:#ffffff20
+  background:#ffffff20;
 }
 
 main{
   margin-left:235px;
   width:calc(100% - 235px);
-  padding:28px
+  padding:28px;
 }
 
 h1{
   margin:0;
   color:var(--navy);
-  font-size:28px
+  font-size:28px;
+}
+
+h2{
+  color:var(--navy);
 }
 
 .sub{
-  color:#667085;
+  color:var(--muted);
   font-size:13px;
-  margin-top:5px
+  margin-top:5px;
 }
 
 .top{
   display:flex;
   justify-content:space-between;
   gap:15px;
-  margin-bottom:20px
+  margin-bottom:20px;
 }
 
 .grid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:14px;
-  margin-bottom:18px
+  margin-bottom:18px;
 }
 
 .card,
@@ -110,23 +120,23 @@ h1{
   background:white;
   border:1px solid var(--line);
   border-radius:14px;
-  box-shadow:0 7px 22px #17365d10
+  box-shadow:0 7px 22px #17365d10;
 }
 
 .card{
-  padding:16px
+  padding:16px;
 }
 
 .label{
   font-size:12px;
-  color:#667085
+  color:var(--muted);
 }
 
 .kpi{
   font-size:28px;
   font-weight:800;
   color:var(--navy);
-  margin-top:4px
+  margin-top:4px;
 }
 
 select,
@@ -134,17 +144,21 @@ select,
   border:1px solid var(--line);
   background:white;
   border-radius:8px;
-  padding:9px 11px
+  padding:9px 11px;
+}
+
+.btn{
+  cursor:pointer;
 }
 
 .tablewrap{
-  overflow:auto
+  overflow:auto;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:780px
+  min-width:780px;
 }
 
 th,
@@ -152,11 +166,11 @@ td{
   padding:11px;
   border-bottom:1px solid #edf0f3;
   font-size:13px;
-  text-align:left
+  text-align:left;
 }
 
 th{
-  background:#f7f9fc
+  background:#f7f9fc;
 }
 
 .badge{
@@ -164,40 +178,50 @@ th{
   padding:5px 9px;
   border-radius:999px;
   font-size:12px;
-  font-weight:700
+  font-weight:700;
 }
 
 .g{
-  background:var(--green)
+  background:var(--green);
 }
 
 .o{
-  background:var(--orange)
+  background:var(--orange);
 }
 
 .r{
-  background:var(--red)
+  background:var(--red);
 }
 
 .y{
-  background:var(--yellow)
+  background:var(--yellow);
 }
 
 .bar{
   height:8px;
   background:#edf1f5;
   border-radius:99px;
-  overflow:hidden
+  overflow:hidden;
 }
 
 .bar span{
   display:block;
   height:100%;
-  background:var(--navy)
+  background:var(--navy);
 }
 
+/* =========================================================
+   Learning Journey
+   固定欄位：
+   學習項目 240
+   類別 105
+   計畫時間 110
+   M01-M24 每格 46
+   完成率 70
+   ========================================================= */
+
 .journey{
-  overflow:auto
+  overflow:auto;
 }
 
 .jh,
@@ -209,7 +233,8 @@ th{
     110px
     repeat(24,46px)
     70px;
-  min-width:1640px
+
+  min-width:1640px;
 }
 
 .jh>div,
@@ -218,48 +243,85 @@ th{
   border-right:1px solid #edf0f3;
   border-bottom:1px solid #edf0f3;
   font-size:11px;
-  text-align:center
+  text-align:center;
+  min-width:0;
 }
 
 .jh>div{
   background:var(--navy);
   color:white;
-  font-weight:700
+  font-weight:700;
 }
 
 .jr>div:nth-child(-n+3){
   text-align:left;
-  padding-left:9px
+  padding-left:9px;
+}
+
+/* 非應完成月份 */
+.not-planned{
+  background:#ffffff;
+  color:#c7cdd5;
+}
+
+/* =========================================================
+   應完成項目：保留 Excel 的黃色底色概念
+   ========================================================= */
+
+.planned{
+  background:var(--yellow);
+  color:#7a6a2f;
+  cursor:pointer;
+}
+
+/* 已完成：綠色 */
+.done{
+  background:var(--green);
+  color:#23732b;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* 目前 PGY 月份：紅框 */
+.today{
+  outline:2px solid var(--today);
+  outline-offset:-2px;
+  position:relative;
+  z-index:2;
+}
+
+/* 目前月份 + 應完成 */
+.today.planned{
+  background:var(--yellow);
+}
+
+/* 目前月份 + 已完成 */
+.today.done{
+  background:var(--green);
 }
 
 .mc{
   min-height:32px;
-  cursor:pointer
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
 }
 
-.planned{
-  background:var(--yellow);
-  color:#667085
+/* 使用方框，不使用圓形 */
+.check{
+  font-size:13px;
+  line-height:1;
 }
 
-.done{
-  background:var(--green);
-  color:#23732b;
-  font-weight:800
-}
-
-.today{
-  outline:2px solid #c0392b;
-  outline-offset:-2px
-}
-
+/* 通知 */
 .notice{
   background:#fff8e6;
   border:1px solid #efd98c;
   border-radius:10px;
   padding:11px 13px;
   margin-bottom:16px;
-  font-size:13px
+  font-size:13px;
 }
 
 .task{
@@ -270,1913 +332,1929 @@ th{
   border:1px solid var(--line);
   padding:11px;
   border-radius:9px;
-  margin:8px 0
+  margin:8px 0;
 }
 
 .task small{
   display:block;
+  color:var(--muted);
+  margin-top:3px;
+}
+
+.loading{
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.error{
+  background:#fff0f0;
+  border:1px solid #f4cccc;
+  color:#a33;
+  padding:15px;
+  border-radius:10px;
+}
+
+.footer-note{
+  font-size:11px;
   color:#667085;
-  margin-top:3px
+  margin-top:25px;
 }
 
 @media(max-width:900px){
 
   aside{
-    width:65px
+    width:65px;
   }
 
   .brand{
-    font-size:0
+    font-size:0;
   }
 
   .brand small{
-    display:none
+    display:none;
   }
 
   .nav button{
     font-size:0;
-    text-align:center
+    text-align:center;
   }
 
   main{
     margin-left:65px;
     width:calc(100% - 65px);
-    padding:16px
+    padding:16px;
   }
 
   .grid{
-    grid-template-columns:repeat(2,1fr)
+    grid-template-columns:repeat(2,1fr);
   }
+
 }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 </head>
 
 <body>
 
 <div class="app">
 
-<aside>
+  <aside>
 
-<div class="brand">
-PGY Mentor Alert
-<small>24M Learning Journey</small>
+    <div class="brand">
+      PGY Mentor Alert
+      <small>24M Learning Journey</small>
+    </div>
+
+    <div class="nav">
+
+      <button class="active" data-view="overview">
+        📊 計畫主任總覽
+      </button>
+
+      <button data-view="mentor">
+        🧑‍🏫 Mentor Alert
+      </button>
+
+      <button data-view="journey">
+        📅 Learning Journey
+      </button>
+
+      <button data-view="individual">
+        👤 個人PGY
+      </button>
+
+    </div>
+
+  </aside>
+
+  <main>
+
+    <div id="app">
+      <div class="loading">
+        正在讀取 GitHub Excel……
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Prototype v2｜資料來源：GitHub /data/PGY_Master.xlsx
+      ｜Excel 直讀模式
+    </div>
+
+  </main>
+
 </div>
 
-<div class="nav">
-
-<button class="active" data-view="overview">
-📊 計畫主任總覽
-</button>
-
-<button data-view="mentor">
-🧑‍🏫 Mentor Alert
-</button>
-
-<button data-view="journey">
-📅 Learning Journey
-</button>
-
-<button data-view="individual">
-👤 個人PGY
-</button>
-
-</div>
-
-</aside>
-
-<main>
-
-<div id="app"></div>
-
-<p style="font-size:11px;color:#667085;margin-top:25px">
-Prototype v1｜Excel 資料來源：GitHub /data/PGY_Master.xlsx
-</p>
-
-</main>
-
-</div>
 
 <script>
 
 /* ============================================================
    PGY Mentor Alert
-   ORIGINAL UI + GITHUB EXCEL DATA
+   EXCEL DIRECT READ VERSION
 
-   Excel:
+   GitHub:
    /data/PGY_Master.xlsx
 
-   Sheet:
+   Excel = 唯一資料來源
+
    00_INDEX
-   BLANK_TEMPLATE
+       ↓
    RT001_姓名
    RT002_姓名
+   RT003_姓名
    ...
 
-   00_INDEX:
-   第3列 = 欄位名稱
-   第4列開始 = PGY資料
-
-   個人Sheet:
-   第3列 = PGY基本資料
-   第5列 = Learning Journey Header
-   第8列開始 = Learning Journey
+   網站只負責：
+   1. 讀取 Excel
+   2. 顯示資料
+   3. 計算 PGY Month
+   4. 顯示 Learning Journey
+   5. 顯示完成率
    ============================================================ */
-
-let people=[];
-let csvJourney=[];
-let csvAssessment=[];
-let csvAlerts=[];
-let excelJourney={};
-
-let selected="";
-let view="overview";
 
 
 /* ------------------------------------------------------------
-   原本 Learning Journey 任務定義
-   保留作為 fallback / 參考
------------------------------------------------------------- */
+   全域資料
+   ------------------------------------------------------------ */
 
-const tasks=[
+let workbook = null;
 
-["基礎課程","基本氧氣治療與溼氣噴霧治療","1-3"],
+let people = [];
 
-["基礎課程","低血氧／高二氧化碳／ABG","1-3"],
+let excelJourney = {};
 
-["基礎課程","Auto-PEEP及處置","1-3"],
+let selected = "";
 
-["基礎課程","身體評估","1-3"],
-
-["基礎課程","呼吸照護登入系統（VPN）","1-3"],
-
-["技術評核","0–3個月技術考","1-3"],
-
-["專業課程","臨床成人呼吸生理學","4-12"],
-
-["專業課程","胸腔常見疾病介紹","4-12"],
-
-["專業課程","小兒氣道照護","4-12"],
-
-["專業課程","呼吸器分類／操作／脫離（含ATC）","4-12"],
-
-["專業課程","健保相關事宜","4-12"],
-
-["技術評核","4–12個月技術評核","4-12"],
-
-["專業課程","手術前後呼吸照護","13-24"],
-
-["專業課程","COPD呼吸照護","13-24"],
-
-["專業課程","ARDS呼吸照護","13-24"],
-
-["專業課程","VAP呼吸照護","13-24"],
-
-["專業課程","呼吸功能改善","13-24"],
-
-["專業課程","HFOV臨床應用","13-24"],
-
-["專業課程","iNO臨床應用","13-24"],
-
-["專業課程","Prone Position Ventilation","13-24"],
-
-["專業課程","Lung Recruitment Management","13-24"],
-
-["技術評核","13–24個月技術評核","13-24"],
-
-["EPA","Ad-hoc EPA","recurring-2-3"],
-
-["評核","Mini-CEX","quarter"],
-
-["評核","CBD／PBD","quarter"],
-
-["評核","IPD／360°","quarter"],
-
-["CCC","CCC能力進度檢視","ccc"],
-
-["導師","每月導師面談","monthly"],
-
-["Exit","結訓前能力盤點","22-24"],
-
-["Exit","Final Assessment／結訓確認","24-24"]
-
-];
+let view = "overview";
 
 
-const state={};
+/* ------------------------------------------------------------
+   Excel 路徑
+   ------------------------------------------------------------ */
 
-const save=()=>{};
+const EXCEL_URL =
+  "./data/PGY_Master.xlsx?v=" + Date.now();
 
 
-function date(s){
+/* ------------------------------------------------------------
+   日期
+   ------------------------------------------------------------ */
 
-if(!s)return null;
+function dateOnly(value){
 
-return new Date(
-String(s).slice(0,10)+"T00:00:00"
-);
+  if(!value) return null;
+
+  if(value instanceof Date){
+    return new Date(
+      value.getFullYear(),
+      value.getMonth(),
+      value.getDate()
+    );
+  }
+
+  const s = String(value).trim();
+
+  if(!s) return null;
+
+  const d = new Date(s);
+
+  if(!isNaN(d.getTime())){
+
+    return new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate()
+    );
+
+  }
+
+  return null;
+}
+
+
+/* ------------------------------------------------------------
+   日期格式
+   ------------------------------------------------------------ */
+
+function formatDate(value){
+
+  const d = dateOnly(value);
+
+  if(!d) return "";
+
+  return d.toLocaleDateString(
+    "zh-TW",
+    {
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit"
+    }
+  );
+}
+
+
+/* ------------------------------------------------------------
+   PGY Month
+   ------------------------------------------------------------ */
+
+function pgyMonth(start){
+
+  const a = dateOnly(start);
+
+  if(!a) return 0;
+
+  const b = new Date();
+
+  let m =
+    (b.getFullYear() - a.getFullYear()) * 12
+    +
+    (b.getMonth() - a.getMonth())
+    +
+    1;
+
+  return Math.max(
+    1,
+    Math.min(24,m)
+  );
+}
+
+
+/* ------------------------------------------------------------
+   M01 日期
+   ------------------------------------------------------------ */
+
+function monthDate(start,m){
+
+  const d = dateOnly(start);
+
+  if(!d) return null;
+
+  const x = new Date(d);
+
+  x.setMonth(
+    x.getMonth() + m - 1
+  );
+
+  return x;
+}
+
+
+/* ------------------------------------------------------------
+   Excel 狀態判斷
+   ------------------------------------------------------------ */
+
+function isDoneValue(v){
+
+  const s =
+    String(v ?? "")
+      .trim()
+      .toLowerCase();
+
+  return [
+    "☑",
+    "✓",
+    "✔",
+    "完成",
+    "done",
+    "true",
+    "1",
+    "yes"
+  ].includes(s);
+}
+
+
+/* ------------------------------------------------------------
+   計畫時間判斷
+   ------------------------------------------------------------ */
+
+function planned(plan,m){
+
+  if(!plan) return false;
+
+  const t =
+    String(plan)
+      .trim()
+      .replaceAll("–","-")
+      .replaceAll("—","-");
+
+  /* 每月 */
+  if(
+    t.includes("每月") ||
+    t.toLowerCase()==="monthly"
+  ){
+    return true;
+  }
+
+  /* 每3個月 */
+  if(
+    t.includes("每3個月") ||
+    t.includes("每3月") ||
+    t.toLowerCase()==="quarter"
+  ){
+    return m % 3 === 0;
+  }
+
+  /* 每2–3個月 */
+  if(
+    t.includes("每2") ||
+    t.includes("2-3") ||
+    t.toLowerCase()==="recurring-2-3"
+  ){
+    return [
+      3,6,9,12,15,18,21,24
+    ].includes(m);
+  }
+
+  /* CCC */
+  if(
+    t.includes("CCC") ||
+    t.toLowerCase()==="ccc"
+  ){
+    return [
+      3,6,12,18,24
+    ].includes(m);
+  }
+
+  /* M01–03 / 1-3 */
+  const match =
+    t.match(/(\d+)\s*-\s*(\d+)/);
+
+  if(match){
+
+    const a = Number(match[1]);
+    const b = Number(match[2]);
+
+    return m >= a && m <= b;
+  }
+
+  /* M24 */
+  const single =
+    t.match(/(\d+)/);
+
+  if(single){
+
+    return m === Number(single[1]);
+  }
+
+  return false;
+}
+
+
+/* ------------------------------------------------------------
+   Excel 儲存格 → 狀態
+   ------------------------------------------------------------ */
+
+function cellDone(value){
+
+  return isDoneValue(value);
+}
+
+
+/* ------------------------------------------------------------
+   解析 PGY INDEX
+   ------------------------------------------------------------ */
+
+function parseIndexSheet(ws){
+
+  const rows =
+    XLSX.utils.sheet_to_json(
+      ws,
+      {
+        header:1,
+        defval:""
+      }
+    );
+
+  const result = [];
+
+  for(let i=0;i<rows.length;i++){
+
+    const r = rows[i];
+
+    if(!r || !r.length) continue;
+
+    if(
+      String(r[0]).trim()==="PGY編號"
+    ){
+      continue;
+    }
+
+    const id =
+      String(r[0] ?? "").trim();
+
+    const name =
+      String(r[1] ?? "").trim();
+
+    const start =
+      r[2];
+
+    const sheet =
+      String(r[3] ?? "").trim();
+
+    const purpose =
+      String(r[4] ?? "").trim();
+
+    const status =
+      String(r[5] ?? "").trim();
+
+    if(
+      /^RT\d+$/i.test(id)
+      &&
+      name
+    ){
+
+      result.push({
+        id,
+        name,
+        start,
+        sheet,
+        purpose,
+        status
+      });
+
+    }
+
+  }
+
+  return result;
+}
+
+
+/* ------------------------------------------------------------
+   解析個人 PGY 工作表
+   ------------------------------------------------------------ */
+
+function parsePersonSheet(ws){
+
+  const rows =
+    XLSX.utils.sheet_to_json(
+      ws,
+      {
+        header:1,
+        defval:""
+      }
+    );
+
+  if(!rows.length) return null;
+
+
+  /* ----------------------------------------------------------
+     找第4列：
+     學習／評核項目
+     ---------------------------------------------------------- */
+
+  let headerRow = -1;
+
+  for(let i=0;i<rows.length;i++){
+
+    const first =
+      String(rows[i][0] ?? "").trim();
+
+    if(
+      first==="學習／評核項目"
+    ){
+      headerRow=i;
+      break;
+    }
+
+  }
+
+  if(headerRow<0){
+    return null;
+  }
+
+
+  const header =
+    rows[headerRow];
+
+
+  /* ----------------------------------------------------------
+     找 M01-M24
+     ---------------------------------------------------------- */
+
+  const monthCols = {};
+
+  for(let c=0;c<header.length;c++){
+
+    const h =
+      String(header[c] ?? "")
+        .trim()
+        .toUpperCase();
+
+    const m =
+      h.match(/^M(\d{1,2})$/);
+
+    if(m){
+
+      const n =
+        Number(m[1]);
+
+      if(n>=1 && n<=24){
+
+        monthCols[n]=c;
+
+      }
+
+    }
+
+  }
+
+
+  /* ----------------------------------------------------------
+     找 PGY 編號 / 姓名 / 到職日
+     ---------------------------------------------------------- */
+
+  let id="";
+  let name="";
+  let start="";
+  let end="";
+  let currentMonth="";
+
+
+  for(let i=0;i<Math.min(5,rows.length);i++){
+
+    const r=rows[i];
+
+    for(let c=0;c<r.length;c++){
+
+      const key =
+        String(r[c] ?? "").trim();
+
+      const value =
+        r[c+1];
+
+      if(key==="PGY編號"){
+        id=String(value ?? "").trim();
+      }
+
+      if(key==="學員姓名"){
+        name=String(value ?? "").trim();
+      }
+
+      if(key==="到職日"){
+        start=value;
+      }
+
+      if(key==="預計結訓日"){
+        end=value;
+      }
+
+      if(key==="目前PGY Month"){
+        currentMonth=value;
+      }
+
+    }
+
+  }
+
+
+  /* ----------------------------------------------------------
+     讀取 Learning Journey
+     ---------------------------------------------------------- */
+
+  const tasks=[];
+
+
+  for(
+    let r=headerRow+2;
+    r<rows.length;
+    r++
+  ){
+
+    const row=rows[r];
+
+    if(!row) continue;
+
+    const item =
+      String(row[0] ?? "").trim();
+
+    const category =
+      String(row[1] ?? "").trim();
+
+    const plan =
+      String(row[2] ?? "").trim();
+
+    if(!item) continue;
+
+    if(
+      item==="TODAY" ||
+      item.startsWith("操作：")
+    ){
+      continue;
+    }
+
+    const months={};
+
+    for(let m=1;m<=24;m++){
+
+      const col =
+        monthCols[m];
+
+      months[m] =
+        col===undefined
+          ? ""
+          : row[col];
+
+    }
+
+    tasks.push({
+      item,
+      category,
+      plan,
+      months
+    });
+
+  }
+
+
+  return {
+    id,
+    name,
+    start,
+    end,
+    currentMonth,
+    tasks
+  };
 
 }
 
 
-function pgyMonth(s){
+/* ------------------------------------------------------------
+   讀取 Excel
+   ------------------------------------------------------------ */
 
-if(!s)return 0;
+async function loadExcel(){
 
-const a=date(s);
-const b=new Date();
+  try{
 
-return Math.max(
-1,
-Math.min(
-24,
-(b.getFullYear()-a.getFullYear())*12+
-b.getMonth()-a.getMonth()+1
-)
-);
+    const response =
+      await fetch(
+        EXCEL_URL,
+        {
+          cache:"no-store"
+        }
+      );
+
+    if(!response.ok){
+
+      throw new Error(
+        "PGY_Master.xlsx 無法讀取，HTTP " +
+        response.status
+      );
+
+    }
+
+    const buffer =
+      await response.arrayBuffer();
+
+
+    workbook =
+      XLSX.read(
+        buffer,
+        {
+          type:"array",
+          cellDates:true
+        }
+      );
+
+
+    /* --------------------------------------------------------
+       00_INDEX
+       -------------------------------------------------------- */
+
+    const indexName =
+      workbook.SheetNames.find(
+        s =>
+          s==="00_INDEX" ||
+          s.toUpperCase().includes("INDEX")
+      );
+
+
+    if(!indexName){
+
+      throw new Error(
+        "Excel 找不到 00_INDEX 工作表"
+      );
+
+    }
+
+
+    people =
+      parseIndexSheet(
+        workbook.Sheets[indexName]
+      );
+
+
+    /* --------------------------------------------------------
+       讀取所有 PGY 分頁
+       -------------------------------------------------------- */
+
+    excelJourney={};
+
+
+    people.forEach(p=>{
+
+      let sheetName =
+        p.sheet;
+
+      if(
+        !sheetName ||
+        !workbook.Sheets[sheetName]
+      ){
+
+        /* 如果 INDEX 沒有寫分頁名稱，
+           嘗試找 RT001 開頭的工作表 */
+
+        sheetName =
+          workbook.SheetNames.find(
+            s =>
+              s.startsWith(
+                p.id+"_"
+              )
+          );
+
+      }
+
+
+      if(
+        sheetName &&
+        workbook.Sheets[sheetName]
+      ){
+
+        const data =
+          parsePersonSheet(
+            workbook.Sheets[sheetName]
+          );
+
+        if(data){
+
+          excelJourney[p.id]=data;
+
+        }
+
+      }
+
+    });
+
+
+    /* --------------------------------------------------------
+       預設選擇第一位 PGY
+       -------------------------------------------------------- */
+
+    if(
+      !selected ||
+      !people.some(
+        p=>p.id===selected
+      )
+    ){
+
+      selected =
+        people[0]?.id || "";
+
+    }
+
+
+    render();
+
+
+  }catch(error){
+
+    console.error(
+      "Excel loading error:",
+      error
+    );
+
+
+    document.getElementById(
+      "app"
+    ).innerHTML=`
+
+      <div class="error">
+
+        <b>⚠️ Excel 讀取失敗</b>
+
+        <br><br>
+
+        ${error.message}
+
+        <br><br>
+
+        請確認 GitHub 是否存在：
+
+        <br>
+
+        <b>
+        /data/PGY_Master.xlsx
+        </b>
+
+      </div>
+
+    `;
+
+  }
 
 }
 
 
-function monthDate(s,m){
-
-let x=date(s);
-
-if(!x)return new Date();
-
-x.setMonth(x.getMonth()+m-1);
-
-return x;
-
-}
-
-
-function md(x){
-
-return x.toLocaleDateString(
-"zh-TW",
-{
-year:"numeric",
-month:"2-digit",
-day:"2-digit"
-}
-);
-
-}
-
-
-function planned(t,m){
-
-if(t==="monthly")return true;
-
-if(t==="quarter")return m%3===0;
-
-if(t==="ccc")
-return [3,6,12,18,24].includes(m);
-
-if(t==="recurring-2-3")
-return [3,6,9,12,15,18,21,24].includes(m);
-
-if(t.includes("-")){
-
-let[a,b]=t.split("-").map(Number);
-
-return m>=a&&m<=b;
-
-}
-
-return false;
-
-}
-
-
-function key(p,t,m){
-
-return p+"|"+t+"|"+m;
-
-}
-
-
-function csvStatus(v){
-
-return [
-"☑",
-"✓",
-"✔",
-"完成",
-"Done",
-"done",
-"TRUE",
-"True",
-"1",
-"yes",
-"Yes"
-].includes(
-String(v).trim()
-);
-
-}
-
-
-function isDone(p,t,m){
-
-const r=csvJourney.find(x=>
-String(x.Trainee_ID).trim()===String(p).trim() &&
-String(x.Item).trim()===String(t).trim() &&
-String(x.Month).trim()===String(m)
-);
-
-return !!(
-r &&
-csvStatus(r.Status)
-);
-
-}
-
-
-function tempDone(p,t,m){
-
-const temp=sessionStorage.getItem(
-"pgy_temp_"+key(p,t,m)
-);
-
-return temp==="1" ||
-(
-temp===null &&
-isDone(p,t,m)
-);
-
-}
-
-
-function toggle(p,t,m){
-
-const k=key(p,t,m);
-
-const next=!tempDone(p,t,m);
-
-sessionStorage.setItem(
-"pgy_temp_"+k,
-next?"1":"0"
-);
-
-render();
-
-}
-
+/* ------------------------------------------------------------
+   取得目前 PGY
+   ------------------------------------------------------------ */
 
 function person(){
 
-return people.find(
-p=>p.id===selected
-)||people[0];
-
-}
-
-
-function summary(p){
-
-let n=0;
-let c=0;
-
-tasks.forEach(t=>{
-
-for(let m=1;m<=24;m++){
-
-if(planned(t[2],m)){
-
-n++;
-
-if(tempDone(p.id,t[1],m))
-c++;
-
-}
-
-}
-
-});
-
-return{
-
-n,
-c,
-rate:n?Math.round(c/n*100):0,
-m:pgyMonth(p.start)
-
-};
-
-}
-
-
-function badge(s){
-
-return s.rate>=90
-?'<span class="badge g">🟢 正常</span>'
-:s.rate>=70
-?'<span class="badge y">🟡 追蹤</span>'
-:'<span class="badge o">🟠 需處理</span>';
-
-}
-
-
-function sel(){
-
-return `
-<select onchange="selectPerson(this.value)">
-
-${people.map(p=>`
-
-<option
-value="${p.id}"
-${p.id===selected?"selected":""}
->
-${p.id}｜${p.name}
-</option>
-
-`).join("")}
-
-</select>
-`;
+  return people.find(
+    p=>p.id===selected
+  ) || people[0];
 
 }
 
 
 /* ------------------------------------------------------------
-   Overview
------------------------------------------------------------- */
+   取得目前 PGY 工作表
+   ------------------------------------------------------------ */
 
-function csvPersonRows(){
+function personData(){
 
-return people.map(p=>{
+  const p=person();
 
-const s=summary(p);
+  if(!p) return null;
 
-return `
-<tr>
-
-<td>
-<b>${p.id}</b>　${p.name}
-</td>
-
-<td>
-M${String(s.m).padStart(2,"0")}
-</td>
-
-<td>
-${s.m<=3
-?"Training Course"
-:s.m<=12
-?"PGY Core"
-:"Advanced PGY"}
-</td>
-
-<td>
-
-<div style="
-display:flex;
-gap:8px;
-align-items:center
-">
-
-<div
-class="bar"
-style="width:100px"
->
-
-<span style="
-width:${s.rate}%
-"></span>
-
-</div>
-
-${s.rate}%
-
-</div>
-
-</td>
-
-<td>
-${badge(s)}
-</td>
-
-<td>
-
-<button
-class="btn"
-onclick="selectPerson('${p.id}')"
->
-查看
-</button>
-
-</td>
-
-</tr>
-`;
-
-}).join("");
+  return excelJourney[p.id] || null;
 
 }
 
 
+/* ------------------------------------------------------------
+   判斷完成
+   ------------------------------------------------------------ */
+
+function isTaskDone(
+  p,
+  task,
+  m
+){
+
+  if(!p || !task) return false;
+
+  const value =
+    task.months?.[m];
+
+  return cellDone(value);
+
+}
+
+
+/* ------------------------------------------------------------
+   計算完成率
+   ------------------------------------------------------------ */
+
+function summary(p){
+
+  const data =
+    excelJourney[p.id];
+
+  if(!data){
+
+    return {
+      n:0,
+      c:0,
+      rate:0,
+      m:pgyMonth(p.start)
+    };
+
+  }
+
+
+  let total=0;
+  let completed=0;
+
+
+  data.tasks.forEach(task=>{
+
+    for(
+      let m=1;
+      m<=24;
+      m++
+    ){
+
+      if(
+        planned(
+          task.plan,
+          m
+        )
+      ){
+
+        total++;
+
+        if(
+          isTaskDone(
+            p,
+            task,
+            m
+          )
+        ){
+
+          completed++;
+
+        }
+
+      }
+
+    }
+
+  });
+
+
+  return {
+    n:total,
+    c:completed,
+    rate:
+      total
+        ? Math.round(
+            completed/total*100
+          )
+        :0,
+    m:pgyMonth(p.start)
+  };
+
+}
+
+
+/* ------------------------------------------------------------
+   狀態 Badge
+   ------------------------------------------------------------ */
+
+function badge(s){
+
+  if(s.rate>=90){
+
+    return `
+      <span class="badge g">
+        🟢 正常
+      </span>
+    `;
+
+  }
+
+  if(s.rate>=70){
+
+    return `
+      <span class="badge y">
+        🟡 追蹤
+      </span>
+    `;
+
+  }
+
+  return `
+    <span class="badge o">
+      🟠 需處理
+    </span>
+  `;
+
+}
+
+
+/* ------------------------------------------------------------
+   PGY 選單
+   ------------------------------------------------------------ */
+
+function sel(){
+
+  return `
+
+    <select
+      onchange="selectPerson(this.value)"
+    >
+
+      ${people.map(p=>`
+
+        <option
+          value="${p.id}"
+          ${p.id===selected?"selected":""}
+        >
+
+          ${p.id}｜${p.name}
+
+        </option>
+
+      `).join("")}
+
+    </select>
+
+  `;
+
+}
+
+
+/* ------------------------------------------------------------
+   計畫主任總覽
+   ------------------------------------------------------------ */
+
 function overview(){
 
-let rows=csvPersonRows();
+  const rows =
+    people.map(p=>{
 
-let total=people.reduce(
-(a,p)=>a+summary(p).n,
-0
-);
+      const s =
+        summary(p);
 
-let done=people.reduce(
-(a,p)=>a+summary(p).c,
-0
-);
-
-return `
-
-<div class="top">
-
-<div>
-
-<h1>
-PGY Mentor Alert
-</h1>
-
-<div class="sub">
-計畫主任總覽｜24個月 Learning Journey
-</div>
-
-</div>
-
-</div>
+      const phase =
+        s.m<=3
+          ? "Training Course"
+          : s.m<=12
+            ? "PGY Core"
+            : "Advanced PGY";
 
 
-<div class="grid">
+      return `
 
-<div class="card">
+        <tr>
 
-<div class="label">
-PGY人數
-</div>
+          <td>
+            <b>${p.id}</b>
+            ｜${p.name}
+          </td>
 
-<div class="kpi">
-${people.length}
-</div>
+          <td>
+            M${String(s.m).padStart(2,"0")}
+          </td>
 
-</div>
+          <td>
+            ${phase}
+          </td>
+
+          <td>
+
+            <div
+              style="
+                display:flex;
+                gap:8px;
+                align-items:center
+              "
+            >
+
+              <div
+                class="bar"
+                style="width:100px"
+              >
+
+                <span
+                  style="
+                    width:${s.rate}%
+                  "
+                ></span>
+
+              </div>
+
+              ${s.rate}%
+
+            </div>
+
+          </td>
+
+          <td>
+            ${badge(s)}
+          </td>
+
+          <td>
+
+            <button
+              class="btn"
+              onclick="selectPerson('${p.id}')"
+            >
+              查看
+            </button>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join("");
 
 
-<div class="card">
-
-<div class="label">
-整體完成率
-</div>
-
-<div class="kpi">
-${total?Math.round(done/total*100):0}%
-</div>
-
-</div>
+  const total =
+    people.reduce(
+      (a,p)=>
+        a+summary(p).n,
+      0
+    );
 
 
-<div class="card">
-
-<div class="label">
-目前月份範圍
-</div>
-
-<div class="kpi">
-M01–M24
-</div>
-
-</div>
+  const done =
+    people.reduce(
+      (a,p)=>
+        a+summary(p).c,
+      0
+    );
 
 
-<div class="card">
-
-<div class="label">
-資料模式
-</div>
-
-<div
-class="kpi"
-style="font-size:18px"
->
-GitHub Excel
-</div>
-
-</div>
-
-</div>
+  const overall =
+    total
+      ? Math.round(
+          done/total*100
+        )
+      :0;
 
 
-<div class="tablewrap">
+  return `
 
-<table>
+    <div class="top">
 
-<thead>
+      <div>
 
-<tr>
+        <h1>
+          PGY Mentor Alert
+        </h1>
 
-<th>PGY</th>
-<th>目前Month</th>
-<th>階段</th>
-<th>完成率</th>
-<th>狀態</th>
-<th></th>
+        <div class="sub">
+          計畫主任總覽｜24個月 Learning Journey
+        </div>
 
-</tr>
+      </div>
 
-</thead>
+    </div>
 
-<tbody>
 
-${rows}
+    <div class="grid">
 
-</tbody>
+      <div class="card">
 
-</table>
+        <div class="label">
+          PGY人數
+        </div>
 
-</div>
+        <div class="kpi">
+          ${people.length}
+        </div>
 
-`;
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">
+          整體完成率
+        </div>
+
+        <div class="kpi">
+          ${overall}%
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">
+          目前月份範圍
+        </div>
+
+        <div class="kpi">
+          M01–M24
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">
+          資料模式
+        </div>
+
+        <div
+          class="kpi"
+          style="font-size:18px"
+        >
+          GitHub Excel
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="tablewrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>PGY</th>
+            <th>目前 Month</th>
+            <th>階段</th>
+            <th>完成率</th>
+            <th>狀態</th>
+            <th></th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${rows}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
 
 }
 
 
 /* ------------------------------------------------------------
    Mentor Alert
------------------------------------------------------------- */
+   ------------------------------------------------------------ */
 
 function mentor(){
 
-let p=person();
+  const p=person();
 
-if(!p)
-return `<div class="card">尚無學員資料。</div>`;
+  if(!p){
 
-let s=summary(p);
+    return `
+      <div class="card">
+        尚無學員資料。
+      </div>
+    `;
 
-let m=s.m;
-
-let list=tasks
-.filter(t=>planned(t[2],m))
-.map(t=>{
-
-const done=tempDone(
-p.id,
-t[1],
-m
-);
-
-return `
-
-<div class="task">
-
-<div>
-
-<b>
-${t[1]}
-</b>
-
-<small>
-${t[0]}
-｜
-M${String(m).padStart(2,"0")}
-｜
-${md(monthDate(p.start,m))}
-</small>
-
-</div>
-
-<button
-class="btn"
-onclick="toggle('${p.id}','${t[1]}',${m})"
->
-${done?"☑ 已完成":"☐ 完成"}
-</button>
-
-</div>
-
-`;
-
-}).join("");
+  }
 
 
-const alertRows=csvAlerts.filter(
-x=>
-String(x.Trainee_ID).trim()===
-String(p.id).trim()
-);
+  const data =
+    personData();
+
+  const s =
+    summary(p);
+
+  const m=s.m;
 
 
-const alertHtml=alertRows.length
-?
-`
-<div class="notice">
+  if(!data){
 
-<b>Mentor Alert</b>
+    return `
+      <div class="card">
+        找不到 ${p.id} 的 Excel 工作表。
+      </div>
+    `;
 
-<br>
-
-${alertRows.map(x=>
-`${x.Message||""}
-${x.Priority?`　[${x.Priority}]`:""}`
-).join("<br>")}
-
-</div>
-`
-:"";
+  }
 
 
-return `
+  const list =
+    data.tasks
+      .filter(
+        task =>
+          planned(
+            task.plan,
+            m
+          )
+      )
+      .map(task=>{
 
-<div class="top">
-
-<div>
-
-<h1>
-Mentor Alert
-</h1>
-
-<div class="sub">
-導師本期工作清單｜資料來自 GitHub Excel
-</div>
-
-</div>
-
-${sel()}
-
-</div>
+        const done =
+          isTaskDone(
+            p,
+            task,
+            m
+          );
 
 
-<div class="notice">
+        return `
 
-<b>
-${p.id}｜${p.name}
-</b>
+          <div class="task">
 
-　到職 ${p.start}
+            <div>
 
-　→　目前
+              <b>
+                ${task.item}
+              </b>
 
-<b>
-M${String(m).padStart(2,"0")}
-</b>
+              <small>
 
-</div>
+                ${task.category}
+                ｜M${String(m).padStart(2,"0")}
+                ｜${formatDate(
+                  monthDate(
+                    p.start,
+                    m
+                  )
+                )}
+
+              </small>
+
+            </div>
 
 
-${alertHtml}
+            <span
+              class="badge ${done?"g":"y"}"
+            >
+
+              ${done
+                ? "☑ 已完成"
+                : "☐ 待完成"}
+
+            </span>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
 
 
-<div class="card">
+  return `
 
-<h2>
-🔔 本期應完成
-</h2>
+    <div class="top">
 
-${list||"<p>目前沒有對應任務。</p>"}
+      <div>
 
-</div>
+        <h1>
+          Mentor Alert
+        </h1>
 
-`;
+        <div class="sub">
+          導師本期工作清單｜資料來自 GitHub Excel
+        </div>
+
+      </div>
+
+      ${sel()}
+
+    </div>
+
+
+    <div class="notice">
+
+      <b>
+        ${p.id}｜${p.name}
+      </b>
+
+      ｜到職日 ${formatDate(p.start)}
+
+      ｜目前
+      <b>
+        M${String(m).padStart(2,"0")}
+      </b>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>
+        🔔 本期應完成
+      </h2>
+
+      ${
+        list ||
+        "<p>目前沒有對應任務。</p>"
+      }
+
+    </div>
+
+  `;
 
 }
 
 
 /* ------------------------------------------------------------
    Learning Journey
------------------------------------------------------------- */
+   ------------------------------------------------------------ */
 
 function journey(){
 
-let p=person();
+  const p=person();
 
-if(!p)
-return `<div class="card">尚無學員資料。</div>`;
+  if(!p){
 
-let m=pgyMonth(p.start);
+    return `
+      <div class="card">
+        尚無學員資料。
+      </div>
+    `;
 
-let j=excelJourney[p.id];
+  }
 
-let excelItems=j?.items||[];
 
+  const data =
+    personData();
 
-let rows=excelItems.map(it=>{
 
-let pc=0;
-let dc=0;
+  if(!data){
 
+    return `
+      <div class="card">
+        找不到 ${p.id} 的 Learning Journey。
+      </div>
+    `;
 
-let c=`
+  }
 
-<div class="jr">
 
-<div>
-<b>
-${it.item}
-</b>
-</div>
+  const m =
+    pgyMonth(p.start);
 
-<div>
-${it.category}
-</div>
 
-<div>
-${it.plan}
-</div>
+  /* ----------------------------------------------------------
+     表頭
+     ---------------------------------------------------------- */
 
-`;
+  const heads = `
 
+    <div class="jh">
 
-for(let mm=1;mm<=24;mm++){
+      <div>
+        學習／評核項目
+      </div>
 
-const raw=cellText(
-it.months[mm-1]
-);
+      <div>
+        類別
+      </div>
 
-const isPlanned=raw!=="";
+      <div>
+        計畫時間
+      </div>
 
-const isDone=excelStatus(raw);
+      ${Array.from(
+        {length:24},
+        (_,i)=>`
 
+          <div>
+            M${String(i+1).padStart(2,"0")}
+          </div>
 
-if(isPlanned)
-pc++;
+        `
+      ).join("")}
 
-if(isDone)
-dc++;
+      <div>
+        完成率
+      </div>
 
+    </div>
 
-/*
-   重要：
-   不自行產生 ○。
-   Excel：
-   空白 = 空白
-   ☐ = 應完成
-   ☑ / ✓ = 已完成
-*/
+  `;
 
-let cls=
-`mc
-${isPlanned?"planned":""}
-${isDone?"done":""}
-${mm===m?"today":""}`;
 
+  /* ----------------------------------------------------------
+     每一列
+     ---------------------------------------------------------- */
 
-let mark="";
+  const rows =
+    data.tasks.map(task=>{
 
-if(isDone){
+      let total=0;
+      let completed=0;
 
-mark="☑";
 
-}else if(isPlanned){
+      let html = `
 
-mark="☐";
+        <div class="jr">
 
-}
+          <div>
+            <b>
+              ${task.item}
+            </b>
+          </div>
 
+          <div>
+            ${task.category}
+          </div>
 
-c+=`
+          <div>
+            ${task.plan}
+          </div>
 
-<div
-class="${cls}"
-title="${raw}"
->
-${mark}
-</div>
+      `;
 
-`;
 
-}
+      for(
+        let mm=1;
+        mm<=24;
+        mm++
+      ){
 
+        const pl =
+          planned(
+            task.plan,
+            mm
+          );
 
-return c+
 
-`
+        const done =
+          isTaskDone(
+            p,
+            task,
+            mm
+          );
 
-<div>
-<b>
-${pc?Math.round(dc/pc*100):0}%
-</b>
-</div>
 
-</div>
+        if(pl){
 
-`;
+          total++;
 
-}).join("");
+          if(done){
+            completed++;
+          }
 
+        }
 
-let heads=`
 
-<div class="jh">
+        let classes =
+          "mc ";
 
-<div>
-學習／評核項目
-</div>
 
-<div>
-類別
-</div>
+        if(pl){
 
-<div>
-計畫時間
-</div>
+          classes +=
+            done
+              ? "done "
+              : "planned ";
 
-${
-Array.from(
-{length:24},
-(_,i)=>
-`<div>M${String(i+1).padStart(2,"0")}</div>`
-).join("")
-}
+        }else{
 
-<div>
-完成率
-</div>
+          classes +=
+            "not-planned ";
 
-</div>
+        }
 
-`;
 
+        if(mm===m){
 
-return `
+          classes +=
+            "today ";
 
-<div class="top">
+        }
 
-<div>
 
-<h1>
-Learning Journey
-</h1>
+        let symbol="";
 
-<div class="sub">
-24M 工程進度表｜紅框＝目前PGY月份
-</div>
 
-</div>
+        /*
+         * 重要：
+         * 一律使用方框
+         * 不使用圓形
+         */
 
-${sel()}
+        if(done){
 
-</div>
+          symbol =
+            `<span class="check">☑</span>`;
 
+        }else if(pl){
 
-<div class="notice">
+          symbol =
+            `<span class="check">☐</span>`;
 
-<b>
-${p.id}｜${p.name}
-</b>
+        }
 
-　到職日 ${p.start}
 
-　｜目前
+        html += `
 
-M${String(m).padStart(2,"0")}
+          <div
+            class="${classes}"
+            title="${
+              pl
+                ? done
+                  ? "已完成"
+                  : "應完成"
+                : ""
+            }"
+          >
 
-</div>
+            ${symbol}
 
+          </div>
 
-<div class="journey">
+        `;
 
-${heads}
+      }
 
-${rows}
 
-</div>
+      const rate =
+        total
+          ? Math.round(
+              completed/total*100
+            )
+          :0;
 
-`;
+
+      html += `
+
+          <div>
+
+            <b>
+              ${rate}%
+            </b>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      return html;
+
+    }).join("");
+
+
+  return `
+
+    <div class="top">
+
+      <div>
+
+        <h1>
+          Learning Journey
+        </h1>
+
+        <div class="sub">
+          24M 工程進度表｜紅框＝目前PGY月份
+        </div>
+
+      </div>
+
+      ${sel()}
+
+    </div>
+
+
+    <div class="notice">
+
+      <b>
+        ${p.id}｜${p.name}
+      </b>
+
+      ｜到職日
+      ${formatDate(p.start)}
+
+      ｜目前
+      <b>
+        M${String(m).padStart(2,"0")}
+      </b>
+
+    </div>
+
+
+    <div class="journey">
+
+      ${heads}
+
+      ${rows}
+
+    </div>
+
+  `;
 
 }
 
 
 /* ------------------------------------------------------------
-   Individual PGY
------------------------------------------------------------- */
+   個人 PGY
+   ------------------------------------------------------------ */
 
 function individual(){
 
-let p=person();
+  const p=person();
 
-if(!p)
-return `<div class="card">尚無學員資料。</div>`;
+  if(!p){
 
-let s=summary(p);
+    return `
+      <div class="card">
+        尚無學員資料。
+      </div>
+    `;
 
-return `
-
-<div class="top">
-
-<div>
-
-<h1>
-個人 PGY
-</h1>
-
-<div class="sub">
-單一學員完整學習歷程
-</div>
-
-</div>
-
-${sel()}
-
-</div>
+  }
 
 
-<div class="grid">
+  const s =
+    summary(p);
 
 
-<div class="card">
+  return `
 
-<div class="label">
-PGY
-</div>
+    <div class="top">
 
-<div
-class="kpi"
-style="font-size:20px"
->
-${p.id}
-</div>
+      <div>
 
-${p.name}
+        <h1>
+          個人 PGY
+        </h1>
 
-</div>
+        <div class="sub">
+          單一學員完整學習歷程
+        </div>
 
+      </div>
 
-<div class="card">
+      ${sel()}
 
-<div class="label">
-到職日
-</div>
-
-<div
-class="kpi"
-style="font-size:18px"
->
-${p.start}
-</div>
-
-</div>
+    </div>
 
 
-<div class="card">
+    <div class="grid">
 
-<div class="label">
-目前PGY Month
-</div>
+      <div class="card">
 
-<div class="kpi">
-M${String(s.m).padStart(2,"0")}
-</div>
+        <div class="label">
+          PGY
+        </div>
 
-</div>
+        <div
+          class="kpi"
+          style="font-size:20px"
+        >
+          ${p.id}
+        </div>
 
+        ${p.name}
 
-<div class="card">
-
-<div class="label">
-完成率
-</div>
-
-<div class="kpi">
-${s.rate}%
-</div>
-
-</div>
+      </div>
 
 
-</div>
+      <div class="card">
+
+        <div class="label">
+          到職日
+        </div>
+
+        <div
+          class="kpi"
+          style="font-size:18px"
+        >
+          ${formatDate(p.start)}
+        </div>
+
+      </div>
 
 
-${journey()}
+      <div class="card">
 
-`;
+        <div class="label">
+          目前PGY Month
+        </div>
+
+        <div class="kpi">
+          M${String(s.m).padStart(2,"0")}
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="label">
+          完成率
+        </div>
+
+        <div class="kpi">
+          ${s.rate}%
+        </div>
+
+      </div>
+
+    </div>
+
+
+    ${journey()}
+
+  `;
 
 }
 
+
+/* ------------------------------------------------------------
+   選擇 PGY
+   ------------------------------------------------------------ */
 
 function selectPerson(id){
 
-selected=id;
+  selected=id;
 
-state.selected=id;
+  if(view==="overview"){
 
-save();
+    view="individual";
 
-if(view==="overview")
-view="individual";
+  }
 
-render();
+  render();
 
 }
 
+
+/* ------------------------------------------------------------
+   Render
+   ------------------------------------------------------------ */
 
 function render(){
 
-document
-.querySelectorAll(".nav button")
-.forEach(b=>
-b.classList.toggle(
-"active",
-b.dataset.view===view
-)
-);
+  document
+    .querySelectorAll(
+      ".nav button"
+    )
+    .forEach(
+      b =>
+        b.classList.toggle(
+          "active",
+          b.dataset.view===view
+        )
+    );
 
 
-document.getElementById("app").innerHTML=
-
-view==="overview"
-?overview()
-:view==="mentor"
-?mentor()
-:view==="journey"
-?journey()
-:individual();
-
-}
+  const app =
+    document.getElementById(
+      "app"
+    );
 
 
-/* ------------------------------------------------------------
-   Excel Utilities
------------------------------------------------------------- */
+  if(!people.length){
 
-function cellText(v){
+    app.innerHTML=`
 
-if(v===null || v===undefined)
-return "";
+      <div class="card">
 
-return String(v).trim();
+        尚未讀取到 PGY 資料。
 
-}
+      </div>
 
+    `;
 
-function excelDateToISO(v){
+    return;
 
-if(v instanceof Date && !isNaN(v)){
-
-return v.toISOString().slice(0,10);
-
-}
+  }
 
 
-if(typeof v==="number"){
+  if(view==="overview"){
 
-const d=new Date(
-Date.UTC(1899,11,30)+
-v*86400000
-);
+    app.innerHTML=
+      overview();
 
-return d.toISOString().slice(0,10);
+  }
 
-}
+  else if(view==="mentor"){
 
+    app.innerHTML=
+      mentor();
 
-const s=String(v??"").trim();
+  }
 
-if(!s)
-return "";
+  else if(view==="journey"){
 
+    app.innerHTML=
+      journey();
 
-let m=s.match(
-/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/
-);
+  }
 
-if(m){
+  else{
 
-return `${m[1]}-${String(m[2]).padStart(2,"0")}-${String(m[3]).padStart(2,"0")}`;
+    app.innerHTML=
+      individual();
 
-}
-
-
-const d=new Date(s);
-
-return isNaN(d)
-?""
-:d.toISOString().slice(0,10);
-
-}
-
-
-function sheetRows(ws){
-
-return XLSX.utils.sheet_to_json(
-ws,
-{
-header:1,
-defval:"",
-raw:true
-}
-);
+  }
 
 }
 
 
 /* ------------------------------------------------------------
-   00_INDEX
-
-   你的 Excel：
-
-   第1列：標題
-   第2列：空白
-   第3列：
-   PGY編號｜姓名｜到職日｜分頁｜用途｜狀態
-
-   第4列開始：
-   RT001...
------------------------------------------------------------- */
-
-function parseIndexSheet(ws){
-
-const rows=sheetRows(ws);
-
-
-const headerIndex=rows.findIndex(r=>{
-
-const a=cellText(r[0])
-.replace(/\s/g,"");
-
-const b=cellText(r[1])
-.replace(/\s/g,"");
-
-return(
-a==="PGY編號" &&
-b==="姓名"
-);
-
-});
-
-
-if(headerIndex<0){
-
-console.error(
-"00_INDEX 找不到 PGY編號 / 姓名"
-);
-
-return [];
-
-}
-
-
-return rows
-.slice(headerIndex+1)
-.filter(r=>cellText(r[0]))
-.map(r=>({
-
-id:cellText(r[0]),
-
-name:cellText(r[1]),
-
-start:excelDateToISO(r[2]),
-
-sheet:cellText(r[3]),
-
-role:"PGY",
-
-status:cellText(r[5])||"目前學員"
-
-}))
-.filter(p=>p.id);
-
-}
-
-
-/* ------------------------------------------------------------
-   個人 PGY Sheet
-
-   你的 Excel：
-
-   第3列：
-   PGY編號 | RT001 | | 學員姓名 | 林書暄 | | 到職日 | 日期
-
-   第5列：
-   學習／評核項目 | 類別 | 計畫時間 | M01 | M02 ...
------------------------------------------------------------- */
-
-function parseJourneySheet(
-ws,
-fallbackId="",
-fallbackName=""
-){
-
-const rows=sheetRows(ws);
-
-
-if(rows.length<8)
-return null;
-
-
-const id=
-cellText(rows[2]?.[1])
-||
-fallbackId;
-
-
-const name=
-cellText(rows[2]?.[4])
-||
-fallbackName;
-
-
-const start=
-excelDateToISO(rows[2]?.[7]);
-
-
-/* 找真正的 Learning Journey Header */
-
-const headerRow=rows.findIndex(r=>
-
-cellText(r[0])
-.replace(/\s/g,"")
-==="學習／評核項目"
-
-&&
-
-cellText(r[3])
-.replace(/\s/g,"")
-==="M01"
-
-);
-
-
-if(headerRow<0){
-
-return{
-id,
-name,
-start,
-items:[]
-};
-
-}
-
-
-const items=[];
-
-
-for(
-let i=headerRow+1;
-i<rows.length;
-i++
-){
-
-const r=rows[i];
-
-const item=cellText(r[0]);
-
-
-/*
-   對應日期不是 Learning Journey 項目
-*/
-
-if(
-!item ||
-item==="對應日期"
-)
-continue;
-
-
-const category=
-cellText(r[1]);
-
-
-const plan=
-cellText(r[2]);
-
-
-if(!category && !plan)
-continue;
-
-
-const months=[];
-
-
-for(
-let m=1;
-m<=24;
-m++
-){
-
-months.push(
-cellText(r[3+(m-1)])
-);
-
-}
-
-
-items.push({
-
-item,
-category,
-plan,
-months
-
-});
-
-}
-
-
-return{
-
-id,
-name,
-start,
-items
-
-};
-
-}
-
-
-/* ------------------------------------------------------------
-   Excel status
------------------------------------------------------------- */
-
-function excelStatus(v){
-
-const s=cellText(v);
-
-
-/*
-   Excel 中：
-   ☑ = 已完成
-   ✓ = 已完成
-   ✔ = 已完成
-*/
-
-return [
-
-"☑",
-"✓",
-"✔",
-"完成",
-"Done",
-"done",
-"TRUE",
-"True",
-"1",
-"yes",
-"Yes"
-
-].includes(s);
-
-}
-
-
-/* ------------------------------------------------------------
-   建立 Journey data
------------------------------------------------------------- */
-
-function buildJourneyData(personId){
-
-const j=excelJourney[personId];
-
-if(!j)
-return [];
-
-
-const out=[];
-
-
-j.items.forEach(it=>{
-
-for(
-let m=1;
-m<=24;
-m++
-){
-
-const v=it.months[m-1];
-
-
-if(v!==""){
-
-out.push({
-
-Trainee_ID:personId,
-
-Item:it.item,
-
-Month:String(m),
-
-Status:
-excelStatus(v)
-?"✓"
-:v,
-
-Category:it.category,
-
-Plan:it.plan
-
-});
-
-}
-
-}
-
-});
-
-
-return out;
-
-}
-
-
-/* ------------------------------------------------------------
-   GitHub Excel Loader
-
-   這裡是這次修正版的核心。
-
-   依序嘗試：
-
-   1. GitHub Pages 相對路徑
-   2. GitHub Pages 絕對路徑
-   3. GitHub Raw
------------------------------------------------------------- */
-
-const EXCEL_URLS=[
-
-"./data/PGY_Master.xlsx",
-
-"/PGY-Mentor-Alert/data/PGY_Master.xlsx",
-
-"https://ggni13-beep.github.io/PGY-Mentor-Alert/data/PGY_Master.xlsx",
-
-"https://raw.githubusercontent.com/ggni13-beep/PGY-Mentor-Alert/main/data/PGY_Master.xlsx"
-
-];
-
-
-async function loadExcelFile(){
-
-let lastError=null;
-
-
-for(
-const url of EXCEL_URLS
-){
-
-try{
-
-console.log(
-"嘗試讀取 Excel：",
-url
-);
-
-
-const response=
-await fetch(
-url+"?v="+Date.now(),
-{
-cache:"no-store"
-}
-);
-
-
-if(response.ok){
-
-console.log(
-"Excel 讀取成功：",
-url
-);
-
-return await response.arrayBuffer();
-
-}
-
-
-lastError=
-new Error(
-"HTTP "+response.status+
-"："+url
-);
-
-
-}catch(err){
-
-lastError=err;
-
-}
-
-}
-
-
-throw(
-lastError ||
-new Error(
-"PGY_Master.xlsx 無法讀取"
-)
-);
-
-}
-
-
-/* ------------------------------------------------------------
-   Boot Excel
------------------------------------------------------------- */
-
-async function bootExcel(){
-
-try{
-
-if(typeof XLSX==="undefined"){
-
-throw new Error(
-"SheetJS 尚未載入"
-);
-
-}
-
-
-/* 讀取 Excel */
-
-const ab=
-await loadExcelFile();
-
-
-/* 解析 Workbook */
-
-const wb=
-XLSX.read(
-ab,
-{
-type:"array",
-cellDates:true
-}
-);
-
-
-console.log(
-"Excel Sheet：",
-wb.SheetNames
-);
-
-
-/* --------------------------------------------------------
-   00_INDEX
--------------------------------------------------------- */
-
-const indexWs=
-wb.Sheets["00_INDEX"];
-
-
-if(!indexWs){
-
-throw new Error(
-"Excel 缺少 00_INDEX 分頁"
-);
-
-}
-
-
-const indexPeople=
-parseIndexSheet(indexWs);
-
-
-if(!indexPeople.length){
-
-throw new Error(
-"00_INDEX 找不到 PGY 資料"
-);
-
-}
-
-
-/* --------------------------------------------------------
-   個人 PGY Sheet
--------------------------------------------------------- */
-
-excelJourney={};
-
-
-wb.SheetNames.forEach(
-sheetName=>{
-
-if(
-sheetName==="00_INDEX" ||
-sheetName==="BLANK_TEMPLATE"
-)
-return;
-
-
-const ws=
-wb.Sheets[sheetName];
-
-
-const j=
-parseJourneySheet(ws);
-
-
-if(
-j &&
-j.id
-){
-
-excelJourney[j.id]=j;
-
-}
-
-}
-);
-
-
-/* --------------------------------------------------------
-   建立 people
--------------------------------------------------------- */
-
-people=
-indexPeople
-.map(p=>{
-
-const j=
-excelJourney[p.id];
-
-
-return{
-
-id:p.id,
-
-name:p.name,
-
-start:
-p.start ||
-j?.start ||
-"",
-
-end:"",
-
-role:p.role||"PGY",
-
-status:
-p.status||
-"目前學員",
-
-sheet:p.sheet
-
-};
-
-})
-.filter(
-p=>p.id && p.name
-);
-
-
-/* --------------------------------------------------------
-   如果 00_INDEX 沒有列出，但個人 Sheet 存在
-   也自動加入
--------------------------------------------------------- */
-
-Object
-.values(excelJourney)
-.forEach(j=>{
-
-if(
-j.id &&
-!people.some(
-p=>p.id===j.id
-)
-){
-
-people.push({
-
-id:j.id,
-
-name:j.name||j.id,
-
-start:j.start||"",
-
-end:"",
-
-role:"PGY",
-
-status:"在訓"
-
-});
-
-}
-
-});
-
-
-/* --------------------------------------------------------
-   Journey data
--------------------------------------------------------- */
-
-csvJourney=[];
-
-
-people.forEach(
-p=>{
-
-csvJourney.push(
-...buildJourneyData(p.id)
-);
-
-}
-);
-
-
-/* --------------------------------------------------------
-   Assessment / Alert
--------------------------------------------------------- */
-
-csvAssessment=[];
-
-csvAlerts=[];
-
-
-/* --------------------------------------------------------
-   預設選擇第一位 PGY
--------------------------------------------------------- */
-
-selected=
-selected &&
-people.some(
-p=>p.id===selected
-)
-?
-selected
-:
-(
-people[0]?.id||
-""
-);
-
-
-/* --------------------------------------------------------
-   Render
--------------------------------------------------------- */
-
-console.log(
-"PGY Excel 載入完成：",
-people.length,
-"人"
-);
-
-
-console.log(
-"PGY 名單：",
-people.map(
-p=>p.id+"｜"+p.name
-)
-);
-
-
-render();
-
-
-}catch(e){
-
-console.error(
-"GitHub Excel loading failed:",
-e
-);
-
-
-/*
-   不讓 UI 消失。
-   如果 Excel 暫時無法讀取，
-   保留原本畫面。
-*/
-
-render();
-
-}
-
-}
-
-
-/* ------------------------------------------------------------
-   Navigation
------------------------------------------------------------- */
+   左側選單
+   ------------------------------------------------------------ */
 
 document
-.querySelectorAll(".nav button")
-.forEach(
-b=>{
+  .querySelectorAll(
+    ".nav button"
+  )
+  .forEach(
+    button => {
 
-b.onclick=()=>{
+      button.onclick=()=>{
 
-view=b.dataset.view;
+        view =
+          button.dataset.view;
 
-render();
+        render();
 
-};
+      };
 
-}
-);
+    }
+  );
 
 
 /* ------------------------------------------------------------
-   Initial render
------------------------------------------------------------- */
+   啟動
+   ------------------------------------------------------------ */
 
-render();
-
-bootExcel();
+loadExcel();
 
 </script>
 
