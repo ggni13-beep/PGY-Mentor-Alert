@@ -149,17 +149,18 @@ function isDone(p,t,m){
  return !!(r&&csvStatus(r.Status));
 }
 function tempDone(p,t,m){
- const k=p+"|"+t+"|"+m, z=sessionStorage.getItem("pgy_temp_"+k);
+ const k=p+"|"+t+"|"+m, z=sessionStorage.getItem("pgy_temp_v2_"+k);
  return z==="1" || (z===null && isDone(p,t,m));
 }
 function toggle(p,t,m){
  const k=p+"|"+t+"|"+m,next=!tempDone(p,t,m);
- sessionStorage.setItem("pgy_temp_"+k,next?"1":"0");render();
+ sessionStorage.setItem("pgy_temp_v2_"+k,next?"1":"0");render();
 }
 function person(){return people.find(p=>p.id===selected)||people[0]}
 function summary(p){
- let n=0,c=0;
- tasks.forEach(t=>{for(let m=1;m<=24;m++)if(planned(t[2],m)){n++;if(tempDone(p.id,t[1],m))c++}});
+ const rr=csvJourney.filter(x=>x.Trainee_ID===p.id);
+ const n=rr.length;
+ const c=rr.filter(x=>csvStatus(x.Status)).length;
  return {n,c,rate:n?Math.round(c/n*100):0,m:pgyMonth(p.start)}
 }
 function badge(s){return s.rate>=90?'<span class="badge g">🟢 正常</span>':s.rate>=70?'<span class="badge y">🟡 追蹤</span>':'<span class="badge o">🟠 需處理</span>'}
@@ -187,7 +188,7 @@ function journey(){
    for(let mm=1;mm<=24;mm++){
      const r=csvJourney.find(x=>x.Trainee_ID===p.id&&x.Item===t[1]&&String(parseInt(x.Month,10))===String(mm));
      const raw=r?r.Status:"";
-     const isPlanned=!!r,isDone=csvStatus(raw);
+     const isPlanned=!!r,isDone=isPlanned?tempDone(p.id,t[1],mm):false;
      if(isPlanned)pc++;if(isDone)dc++;
      const cls=`mc ${isPlanned?"planned":""} ${isDone?"done":""} ${mm===m?"today":""}`;
      const mark=isDone?"✓":isPlanned?"☐":"";
