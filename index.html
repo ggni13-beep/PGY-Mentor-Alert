@@ -389,6 +389,185 @@ th{
   margin:0 0 10px
 }
 
+
+/* =========================================================
+   STEP 1｜Mentor Alert 首頁
+   只新增首頁 Alert UI，不修改 Learning Journey / 個人 PGY
+========================================================= */
+
+.alert-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px
+}
+
+.alert-summary-card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 7px 22px #17365d10
+}
+
+.alert-summary-card .alert-number{
+  font-size:27px;
+  font-weight:800;
+  color:var(--navy);
+  margin-top:4px
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:12px
+}
+
+.category-card{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:13px;
+  background:#fff
+}
+
+.category-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  font-weight:800
+}
+
+.category-rate{
+  color:var(--navy);
+  font-weight:800
+}
+
+.category-bar{
+  height:9px;
+  background:#edf1f5;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:9px
+}
+
+.category-bar span{
+  display:block;
+  height:100%;
+  background:var(--navy)
+}
+
+.action-card{
+  margin-top:18px
+}
+
+.action-title{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px
+}
+
+.action-title h2{
+  margin:0;
+  color:var(--navy)
+}
+
+.action-note{
+  color:#667085;
+  font-size:12px
+}
+
+.alert-item{
+  display:grid;
+  grid-template-columns:95px 1fr 105px 90px 86px;
+  gap:12px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px;
+  margin:8px 0;
+  background:#fff
+}
+
+.alert-item:hover{
+  background:#fafcff
+}
+
+.alert-person{
+  font-weight:800;
+  color:var(--navy)
+}
+
+.alert-task{
+  font-weight:700
+}
+
+.alert-task small{
+  display:block;
+  color:#667085;
+  font-weight:400;
+  margin-top:3px
+}
+
+.status-pill{
+  display:inline-block;
+  text-align:center;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800
+}
+
+.status-todo{
+  background:#fff0f0;
+  color:#b42318
+}
+
+.status-done{
+  background:#ecfdf3;
+  color:#047857
+}
+
+.alert-action{
+  text-align:right
+}
+
+.alert-action .btn{
+  font-weight:700
+}
+
+.empty-alert{
+  padding:18px;
+  text-align:center;
+  color:#667085;
+  background:#f8fafc;
+  border-radius:10px
+}
+
+.section-label{
+  font-size:13px;
+  color:#667085;
+  font-weight:700;
+  margin-bottom:5px
+}
+
+@media(max-width:1100px){
+  .alert-summary{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .alert-item{
+    grid-template-columns:90px 1fr 90px 80px
+  }
+
+  .alert-action{
+    grid-column:4
+  }
+}
+
 @media(max-width:900px){
 
   aside{
@@ -929,91 +1108,306 @@ function sel(){
 
 function overview(){
 
-  const rows=people.map(p=>{
+  /* =======================================================
+     STEP 1｜首頁改為 Mentor Alert
+     24M Learning Journey 保留在 Page 3 / 個人 PGY
+  ======================================================= */
 
-    const s=summary(p);
+  const categories=[
+    "專業課程",
+    "技術考評",
+    "EPA",
+    "Mini-CEX",
+    "CbD",
+    "IPD",
+    "導師訪談",
+    "CCC"
+  ];
 
-    return `
-    <tr>
+  function categoryOf(t){
 
-      <td>
-        <b>${p.id}</b>
-        ${p.name}
-      </td>
+    const c=t[0];
+    const n=t[1];
 
-      <td>
-        M${String(s.m).padStart(2,"0")}
-      </td>
+    if(c==="EPA"){
+      return "EPA";
+    }
 
-      <td>
-        ${
-          s.m<=3
-          ?"Training Course"
-          :s.m<=12
-          ?"PGY Core"
-          :"Advanced PGY"
+    if(c==="CCC"){
+      return "CCC";
+    }
+
+    if(c==="導師"){
+      return "導師訪談";
+    }
+
+    if(c==="技術評核"){
+      return "技術考評";
+    }
+
+    if(c==="評核" && /Mini-CEX/i.test(n)){
+      return "Mini-CEX";
+    }
+
+    if(c==="評核" && /CBD|PBD/i.test(n)){
+      return "CbD";
+    }
+
+    if(c==="評核" && /IPD|360/i.test(n)){
+      return "IPD";
+    }
+
+    if(c==="專業課程"){
+      return "專業課程";
+    }
+
+    return null;
+  }
+
+
+  function categorySummary(category){
+
+    let plannedCount=0;
+    let doneCount=0;
+
+    people.forEach(p=>{
+
+      const m=pgyMonth(p.start);
+
+      tasks.forEach(t=>{
+
+        if(categoryOf(t)!==category){
+          return;
         }
-      </td>
 
-      <td>
+        for(let mm=1;mm<=m;mm++){
 
-        <div
-          style="
-          display:flex;
-          gap:8px;
-          align-items:center
-          "
-        >
+          if(planned(t[2],mm)){
 
-          <div
-            class="bar"
-            style="width:100px"
-          >
-            <span
-              style="
-              width:${s.rate}%
-              "
-            ></span>
-          </div>
+            plannedCount++;
 
-          ${s.rate}%
+            if(tempDone(p.id,t[1],mm)){
+              doneCount++;
+            }
+
+          }
+
+        }
+
+      });
+
+    });
+
+    return{
+      planned:plannedCount,
+      done:doneCount,
+      rate:plannedCount
+        ?Math.round(doneCount/plannedCount*100)
+        :0
+    };
+
+  }
+
+
+  const categoryCards=
+    categories.map(category=>{
+
+      const s=categorySummary(category);
+
+      return `
+      <div class="category-card">
+
+        <div class="category-head">
+
+          <span>
+            ${category}
+          </span>
+
+          <span class="category-rate">
+            ${s.rate}%
+          </span>
 
         </div>
 
-      </td>
+        <div class="category-bar">
+          <span style="width:${s.rate}%"></span>
+        </div>
 
-      <td>
-        ${badge(s)}
-      </td>
-
-      <td>
-
-        <button
-          class="btn"
-          onclick="selectPerson('${p.id}')"
+        <div
+          style="
+          margin-top:7px;
+          font-size:12px;
+          color:#667085
+          "
         >
-          查看
-        </button>
+          已完成 ${s.done}／應完成 ${s.planned}
+        </div>
 
-      </td>
+      </div>
+      `;
 
-    </tr>
+    }).join("");
+
+
+  /* =======================================================
+     本月 Alert Action Center
+     顯示所有在訓 PGY 的目前月份任務
+  ======================================================= */
+
+  const actionRows=[];
+
+  people.forEach(p=>{
+
+    if(p.status && p.status!=="在訓"){
+      return;
+    }
+
+    const m=pgyMonth(p.start);
+
+    tasks.forEach(t=>{
+
+      if(!planned(t[2],m)){
+        return;
+      }
+
+      const category=categoryOf(t);
+
+      if(!category){
+        return;
+      }
+
+      const done=tempDone(
+        p.id,
+        t[1],
+        m
+      );
+
+      actionRows.push({
+
+        id:p.id,
+        name:p.name,
+        month:m,
+        category,
+        item:t[1],
+        done
+
+      });
+
+    });
+
+  });
+
+
+  actionRows.sort((a,b)=>{
+
+    if(a.done!==b.done){
+      return a.done ? 1 : -1;
+    }
+
+    return a.id.localeCompare(b.id);
+
+  });
+
+
+  const actionHtml=
+    actionRows.length
+
+    ?actionRows.map(x=>`
+
+      <div class="alert-item">
+
+        <div class="alert-person">
+          ${x.id}
+        </div>
+
+        <div class="alert-task">
+
+          ${x.item}
+
+          <small>
+            ${x.name}
+            ｜${x.category}
+            ｜M${String(x.month).padStart(2,"0")}
+          </small>
+
+        </div>
+
+        <div>
+          <span
+            class="
+            status-pill
+            ${x.done
+              ?"status-done"
+              :"status-todo"}
+            "
+          >
+            ${
+              x.done
+              ?"🟢 已完成"
+              :"🔴 待完成"
+            }
+          </span>
+        </div>
+
+        <div
+          style="
+          font-size:12px;
+          color:#667085;
+          text-align:center
+          "
+        >
+          M${String(x.month).padStart(2,"0")}
+        </div>
+
+        <div class="alert-action">
+
+          <button
+            class="btn"
+            onclick="
+              selected='${x.id}';
+              view='mentor';
+              render();
+            "
+          >
+            ${x.done?"查看":"開始"}
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("")
+
+    :`
+      <div class="empty-alert">
+        🎉 目前沒有本月待處理項目。
+      </div>
     `;
 
-  }).join("");
 
+  /* =======================================================
+     KPI
+  ======================================================= */
 
-  let total=
+  const total=
     people.reduce(
       (a,p)=>a+summary(p).n,
       0
     );
 
-  let done=
+  const done=
     people.reduce(
       (a,p)=>a+summary(p).c,
       0
     );
+
+  const todo=
+    Math.max(
+      0,
+      actionRows.filter(x=>!x.done).length
+    );
+
+  const overdue=0;
 
 
   return `
@@ -1027,7 +1421,7 @@ function overview(){
       </h1>
 
       <div class="sub">
-        計畫主任總覽｜24個月 Learning Journey
+        計畫主任總覽｜本月教學、評核與 Mentor Alert
       </div>
 
     </div>
@@ -1035,28 +1429,41 @@ function overview(){
   </div>
 
 
-  <div class="grid">
+  <div class="alert-summary">
 
-    <div class="card">
+    <div class="alert-summary-card">
 
       <div class="label">
         PGY人數
       </div>
 
-      <div class="kpi">
+      <div class="alert-number">
         ${people.length}
       </div>
 
     </div>
 
 
-    <div class="card">
+    <div class="alert-summary-card">
 
       <div class="label">
-        整體完成率
+        本月待完成
       </div>
 
-      <div class="kpi">
+      <div class="alert-number">
+        ${todo}
+      </div>
+
+    </div>
+
+
+    <div class="alert-summary-card">
+
+      <div class="label">
+        目前整體完成率
+      </div>
+
+      <div class="alert-number">
         ${
           total
           ?Math.round(done/total*100)
@@ -1067,30 +1474,14 @@ function overview(){
     </div>
 
 
-    <div class="card">
+    <div class="alert-summary-card">
 
       <div class="label">
-        目前月份範圍
+        逾期
       </div>
 
-      <div class="kpi">
-        M01–M24
-      </div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="label">
-        資料模式
-      </div>
-
-      <div
-        class="kpi"
-        style="font-size:18px"
-      >
-        GitHub CSV
+      <div class="alert-number">
+        ${overdue}
       </div>
 
     </div>
@@ -1098,37 +1489,81 @@ function overview(){
   </div>
 
 
-  <div class="tablewrap">
+  <div class="card">
 
-    <table>
+    <div class="action-title">
 
-      <thead>
+      <h2>
+        📊 各類完成率
+      </h2>
 
-        <tr>
+      <div class="action-note">
+        依目前 PGY Month 累計計算
+      </div>
 
-          <th>PGY</th>
-          <th>目前Month</th>
-          <th>階段</th>
-          <th>完成率</th>
-          <th>狀態</th>
-          <th></th>
+    </div>
 
-        </tr>
+    <div class="category-grid">
 
-      </thead>
+      ${categoryCards}
 
-      <tbody>
-
-        ${rows}
-
-      </tbody>
-
-    </table>
+    </div>
 
   </div>
+
+
+  <div class="card action-card">
+
+    <div class="action-title">
+
+      <div>
+
+        <h2>
+          🔔 Alert Action Center
+        </h2>
+
+        <div class="action-note">
+          本月應完成事項｜點選「開始」進入該學員 Mentor Alert
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="alert-item"
+      style="
+      background:#f7f9fc;
+      font-weight:800;
+      color:#475467
+      "
+    >
+
+      <div>PGY</div>
+
+      <div>應完成項目</div>
+
+      <div style="text-align:center">
+        狀態
+      </div>
+
+      <div style="text-align:center">
+        Month
+      </div>
+
+      <div></div>
+
+    </div>
+
+
+    ${actionHtml}
+
+  </div>
+
 
   `;
 }
+
 
 
 /* =========================================================
