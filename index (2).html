@@ -1,0 +1,3129 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PGY Mentor Alert</title>
+
+<style>
+:root{
+  --navy:#17365d;
+  --bg:#f5f7fa;
+  --line:#dbe2ea;
+  --green:#e2f0d9;
+  --yellow:#fff2cc;
+  --orange:#fce4d6;
+  --red:#f4cccc;
+}
+
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  font-family:Segoe UI,Arial,"Noto Sans TC",sans-serif;
+  background:var(--bg);
+  color:#263238
+}
+
+.app{
+  display:flex;
+  min-height:100vh
+}
+
+aside{
+  width:235px;
+  background:var(--navy);
+  color:white;
+  position:fixed;
+  inset:0 auto 0 0;
+  padding:22px 14px;
+  overflow-y:auto
+}
+
+.brand{
+  font-size:20px;
+  font-weight:800;
+  padding:0 10px 25px
+}
+
+.brand small{
+  display:block;
+  font-size:11px;
+  opacity:.7;
+  margin-top:5px
+}
+
+.nav button{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:white;
+  text-align:left;
+  margin:3px 0;
+  cursor:pointer;
+  font-size:15px;
+  line-height:1.4
+}
+
+.nav button.active,
+.nav button:hover{
+  background:#ffffff20
+}
+
+main{
+  margin-left:235px;
+  width:calc(100% - 235px);
+  padding:28px
+}
+
+h1{
+  margin:0;
+  color:var(--navy);
+  font-size:28px
+}
+
+.sub{
+  color:#667085;
+  font-size:13px;
+  margin-top:5px
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:20px
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px
+}
+
+.card,
+.tablewrap,
+.journey{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:0 7px 22px #17365d10
+}
+
+.card{
+  padding:16px
+}
+
+.label{
+  font-size:12px;
+  color:#667085
+}
+
+.kpi{
+  font-size:28px;
+  font-weight:800;
+  color:var(--navy);
+  margin-top:4px
+}
+
+select,
+.btn,
+input{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:8px;
+  padding:9px 11px
+}
+
+input,
+select{
+  width:100%;
+}
+
+.btn{
+  cursor:pointer
+}
+
+.btn:hover{
+  background:#f7f9fc
+}
+
+.tablewrap{
+  overflow:auto
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:780px
+}
+
+th,
+td{
+  padding:11px;
+  border-bottom:1px solid #edf0f3;
+  font-size:13px;
+  text-align:left
+}
+
+th{
+  background:#f7f9fc
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700
+}
+
+.g{
+  background:var(--green)
+}
+
+.o{
+  background:var(--orange)
+}
+
+.r{
+  background:var(--red)
+}
+
+.y{
+  background:var(--yellow)
+}
+
+.bar{
+  height:8px;
+  background:#edf1f5;
+  border-radius:99px;
+  overflow:hidden
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  background:var(--navy)
+}
+
+.journey{
+  overflow:auto
+}
+
+.jh,
+.jr{
+  display:grid;
+  grid-template-columns:
+    240px
+    105px
+    110px
+    repeat(24,46px)
+    70px;
+  min-width:1640px
+}
+
+.jh>div,
+.jr>div{
+  padding:8px 4px;
+  border-right:1px solid #edf0f3;
+  border-bottom:1px solid #edf0f3;
+  font-size:11px;
+  text-align:center
+}
+
+.jh>div{
+  background:var(--navy);
+  color:white;
+  font-weight:700
+}
+
+.jr>div:nth-child(-n+3){
+  text-align:left;
+  padding-left:9px
+}
+
+.mc{
+  min-height:32px;
+  cursor:pointer
+}
+
+.planned{
+  background:var(--yellow);
+  color:#667085
+}
+
+.done{
+  background:var(--green);
+  color:#23732b;
+  font-weight:800
+}
+
+.today{
+  outline:2px solid #c0392b;
+  outline-offset:-2px
+}
+
+.notice{
+  background:#fff8e6;
+  border:1px solid #efd98c;
+  border-radius:10px;
+  padding:11px 13px;
+  margin-bottom:16px;
+  font-size:13px
+}
+
+.task{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  border:1px solid var(--line);
+  padding:11px;
+  border-radius:9px;
+  margin:8px 0
+}
+
+.task small{
+  display:block;
+  color:#667085;
+  margin-top:3px
+}
+
+.error{
+  background:#fff0f0;
+  border:1px solid #f0b7b7;
+  color:#a33;
+  border-radius:12px;
+  padding:18px
+}
+
+/* ===== 新增 PGY ===== */
+
+.formgrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px
+}
+
+.field label{
+  font-size:13px;
+  font-weight:700;
+  color:#344054
+}
+
+.field input,
+.field select{
+  min-height:42px
+}
+
+.add-title{
+  color:var(--navy);
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:16px
+}
+
+.add-actions{
+  margin-top:22px;
+  display:flex;
+  gap:10px;
+  align-items:center
+}
+
+.btn-primary{
+  background:var(--navy);
+  color:white;
+  border-color:var(--navy);
+  padding:11px 20px;
+  font-weight:700
+}
+
+.btn-primary:hover{
+  background:#244d7e;
+  color:white
+}
+
+.btn-secondary{
+  background:#f7f9fc
+}
+
+.success-box{
+  background:#ecfdf3;
+  border:1px solid #a7f3d0;
+  color:#047857;
+  border-radius:10px;
+  padding:14px;
+  margin-top:16px
+}
+
+.fail-box{
+  background:#fff0f0;
+  border:1px solid #f0b7b7;
+  color:#a33;
+  border-radius:10px;
+  padding:14px;
+  margin-top:16px
+}
+
+.url-note{
+  font-size:12px;
+  color:#667085;
+  margin-top:6px;
+  line-height:1.6
+}
+
+.section-title{
+  font-size:15px;
+  font-weight:800;
+  color:var(--navy);
+  margin:0 0 10px
+}
+
+
+/* =========================================================
+   STEP 1｜Mentor Alert 首頁
+   只新增首頁 Alert UI，不修改 Learning Journey / 個人 PGY
+========================================================= */
+
+.alert-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:18px
+}
+
+.alert-summary-card{
+  background:white;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 7px 22px #17365d10
+}
+
+.alert-summary-card .alert-number{
+  font-size:27px;
+  font-weight:800;
+  color:var(--navy);
+  margin-top:4px
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:12px
+}
+
+.category-card{
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:13px;
+  background:#fff
+}
+
+.category-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  font-weight:800
+}
+
+.category-rate{
+  color:var(--navy);
+  font-weight:800
+}
+
+.category-bar{
+  height:9px;
+  background:#edf1f5;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:9px
+}
+
+.category-bar span{
+  display:block;
+  height:100%;
+  background:var(--navy)
+}
+
+.action-card{
+  margin-top:18px
+}
+
+.action-title{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px
+}
+
+.action-title h2{
+  margin:0;
+  color:var(--navy)
+}
+
+.action-note{
+  color:#667085;
+  font-size:12px
+}
+
+.alert-item{
+  display:grid;
+  grid-template-columns:95px 1fr 105px 90px 86px;
+  gap:12px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px;
+  margin:8px 0;
+  background:#fff
+}
+
+.alert-item:hover{
+  background:#fafcff
+}
+
+.alert-person{
+  font-weight:800;
+  color:var(--navy)
+}
+
+.alert-task{
+  font-weight:700
+}
+
+.alert-task small{
+  display:block;
+  color:#667085;
+  font-weight:400;
+  margin-top:3px
+}
+
+.status-pill{
+  display:inline-block;
+  text-align:center;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800
+}
+
+.status-todo{
+  background:#fff0f0;
+  color:#b42318
+}
+
+.status-done{
+  background:#ecfdf3;
+  color:#047857
+}
+
+.alert-action{
+  text-align:right
+}
+
+.alert-action .btn{
+  font-weight:700
+}
+
+.empty-alert{
+  padding:18px;
+  text-align:center;
+  color:#667085;
+  background:#f8fafc;
+  border-radius:10px
+}
+
+.section-label{
+  font-size:13px;
+  color:#667085;
+  font-weight:700;
+  margin-bottom:5px
+}
+
+@media(max-width:1100px){
+  .alert-summary{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .alert-item{
+    grid-template-columns:90px 1fr 90px 80px
+  }
+
+  .alert-action{
+    grid-column:4
+  }
+}
+
+@media(max-width:900px){
+
+  aside{
+    width:65px
+  }
+
+  .brand{
+    font-size:0
+  }
+
+  .brand small{
+    display:none
+  }
+
+  .nav button{
+    font-size:0;
+    text-align:center
+  }
+
+  main{
+    margin-left:65px;
+    width:calc(100% - 65px);
+    padding:16px
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .formgrid{
+    grid-template-columns:1fr
+  }
+}
+
+/* Learning Journey 局部字體與版面調整；其他頁面維持原樣 */
+.learning-journey-page{
+  font-size:15px
+}
+.learning-journey-page h1{
+  font-size:30px
+}
+.learning-journey-page .sub{
+  font-size:14px;
+  line-height:1.5
+}
+.learning-journey-page .journey-person-tools{
+  display:flex;
+  align-items:stretch;
+  justify-content:flex-end;
+  gap:10px;
+  flex:1;
+  min-width:0
+}
+.learning-journey-page .journey-select{
+  width:220px;
+  min-width:190px;
+  flex:0 0 220px;
+  font-size:17px;
+  font-weight:600;
+  padding:8px 10px;
+  line-height:1.4
+}
+.learning-journey-page .journey-notice{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  background:#fff8e6;
+  border:1px solid #efd98c;
+  border-radius:10px;
+  padding:9px 12px;
+  margin:0;
+  font-size:14px;
+  line-height:1.5;
+  flex:1;
+  min-width:260px
+}
+.learning-journey-page .journey-notice strong{
+  font-size:16px
+}
+.learning-journey-page .journey-notice .current-month{
+  white-space:nowrap
+}
+.learning-journey-page .jh>div{
+  font-size:15px;
+  padding:11px 5px
+}
+.learning-journey-page .jr>div{
+  font-size:14px;
+  padding:10px 6px;
+  line-height:1.4
+}
+.learning-journey-page .jr>div:nth-child(1){
+  font-size:14px;
+  font-weight:600
+}
+.learning-journey-page .mc{
+  min-height:36px;
+  font-size:15px
+}
+.learning-journey-page .table-item-name{
+  text-align:left;
+  overflow-wrap:anywhere
+}
+@media(max-width:1100px){
+  .learning-journey-page .top{
+    flex-wrap:wrap
+  }
+  .learning-journey-page .journey-person-tools{
+    width:100%;
+    justify-content:flex-start
+  }
+}
+@media(max-width:650px){
+  .learning-journey-page .journey-person-tools{
+    flex-direction:column
+  }
+  .learning-journey-page .journey-select{
+    width:100%;
+    flex:1 1 auto
+  }
+  .learning-journey-page .journey-notice{
+    min-width:0
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside>
+
+<div class="brand">
+  PGY Mentor Alert
+  <small>24M Learning Journey</small>
+</div>
+
+<div class="nav">
+
+<button class="active" data-view="overview">
+  📊 計畫主任總覽
+</button>
+
+<button data-view="mentor">
+  🧑‍🏫 Mentor Alert
+</button>
+
+<button data-view="journey">
+  📅 Learning Journey
+</button>
+
+<button data-view="individual">
+  👤 個人PGY
+</button>
+
+<button data-view="addpgy">
+  ➕ 新增 PGY
+</button>
+
+</div>
+</aside>
+
+<main>
+
+<div id="app"></div>
+
+<p style="
+font-size:18px;
+font-weight:700;
+color:#dc2626;
+margin-top:25px;
+line-height:1.8
+">
+更新資料時間：每月1-5號左右｜目的：提醒導師、學員當月該完成事項
+</p>
+
+</main>
+
+</div>
+
+
+<script>
+
+let people=[];
+let csvJourney=[];
+let csvAssessment=[];
+let csvAlerts=[];
+
+let selected="";
+let view="overview";
+
+
+/* =========================================================
+   PGY 任務設定
+========================================================= */
+
+const tasks=[
+
+["基礎課程","基本氧氣治療與溼氣噴霧治療","1-3"],
+
+["基礎課程","低血氧／高二氧化碳／ABG","1-3"],
+
+["基礎課程","Auto-PEEP及處置","1-3"],
+
+["基礎課程","身體評估","1-3"],
+
+["基礎課程","呼吸照護登入系統（VPN）","1-3"],
+
+["技術評核","0–3個月技術考","1-3"],
+
+["專業課程","臨床成人呼吸生理學","4-12"],
+
+["專業課程","胸腔常見疾病介紹","4-12"],
+
+["專業課程","小兒氣道照護","4-12"],
+
+["專業課程","呼吸器分類／操作／脫離（含ATC）","4-12"],
+
+["專業課程","健保相關事宜","4-12"],
+
+["技術評核","4–12個月技術評核","4-12"],
+
+["專業課程","手術前後呼吸照護","13-24"],
+
+["專業課程","COPD呼吸照護","13-24"],
+
+["專業課程","ARDS呼吸照護","13-24"],
+
+["專業課程","VAP呼吸照護","13-24"],
+
+["專業課程","呼吸功能改善","13-24"],
+
+["專業課程","HFOV臨床應用","13-24"],
+
+["專業課程","iNO臨床應用","13-24"],
+
+["專業課程","Prone Position Ventilation","13-24"],
+
+["專業課程","Lung Recruitment Management","13-24"],
+
+["技術評核","13–24個月技術評核","13-24"],
+
+["EPA","Ad-hoc EPA","recurring-2-3"],
+
+["評核","Mini-CEX","quarter"],
+
+["評核","CBD／PBD","quarter"],
+
+["評核","IPD／360°","quarter"],
+
+["CCC","CCC能力進度檢視","ccc"],
+
+["導師","每月導師面談","monthly"],
+
+["Exit","結訓前能力盤點","22-24"],
+
+["Exit","Final Assessment／結訓確認","24-24"]
+
+];
+
+
+/* =========================================================
+   CSV
+========================================================= */
+
+function parseCSV(text){
+
+  const rows=[];
+  let row=[];
+  let field="";
+  let quoted=false;
+
+  for(let i=0;i<text.length;i++){
+
+    const ch=text[i];
+    const nx=text[i+1];
+
+    if(quoted){
+
+      if(ch=='"' && nx=='"'){
+        field+='"';
+        i++;
+      }
+
+      else if(ch=='"'){
+        quoted=false;
+      }
+
+      else{
+        field+=ch;
+      }
+
+    }
+
+    else{
+
+      if(ch=='"'){
+        quoted=true;
+      }
+
+      else if(ch==','){
+        row.push(field);
+        field="";
+      }
+
+      else if(ch=='\n'){
+        row.push(field);
+        rows.push(row);
+        row=[];
+        field="";
+      }
+
+      else if(ch!='\r'){
+        field+=ch;
+      }
+
+    }
+  }
+
+  if(field!=="" || row.length){
+    row.push(field);
+    rows.push(row);
+  }
+
+  const h=(rows.shift()||[]).map(x=>x.trim());
+
+  return rows
+    .filter(r=>r.some(x=>x!==""))
+    .map(r=>{
+      const o={};
+      h.forEach((k,i)=>{
+        o[k]=(r[i]??"").trim();
+      });
+      return o;
+    });
+}
+
+
+async function loadCSV(file){
+
+  const r=await fetch(
+    "./data/"+file+"?v="+Date.now(),
+    {
+      cache:"no-store"
+    }
+  );
+
+  if(!r.ok){
+    throw new Error(file+" HTTP "+r.status);
+  }
+
+  return parseCSV(await r.text());
+}
+
+
+/* =========================================================
+   日期 / PGY Month
+========================================================= */
+
+function date(s){
+  return new Date(
+    String(s).slice(0,10)+"T00:00:00"
+  );
+}
+
+
+function pgyMonth(s){
+
+  if(!s)return 0;
+
+  const a=date(s);
+  const b=new Date();
+
+  return Math.max(
+    1,
+    Math.min(
+      24,
+      (b.getFullYear()-a.getFullYear())*12
+      +b.getMonth()-a.getMonth()
+      +1
+    )
+  );
+}
+
+
+function monthDate(s,m){
+
+  let x=date(s);
+
+  x.setMonth(
+    x.getMonth()+m-1
+  );
+
+  return x;
+}
+
+
+function md(x){
+
+  return x.toLocaleDateString(
+    "zh-TW",
+    {
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit"
+    }
+  );
+}
+
+
+/* =========================================================
+   任務計畫
+========================================================= */
+
+function planned(t,m){
+
+  if(t==="monthly"){
+    return true;
+  }
+
+  if(t==="quarter"){
+    return m%3===0;
+  }
+
+  if(t==="ccc"){
+    return [3,6,12,18,24].includes(m);
+  }
+
+  if(t==="recurring-2-3"){
+    return [3,6,9,12,15,18,21,24].includes(m);
+  }
+
+  if(t.includes("-")){
+
+    let[a,b]=t
+      .split("-")
+      .map(Number);
+
+    return m>=a && m<=b;
+  }
+
+  return false;
+}
+
+
+/* =========================================================
+   CSV Status
+========================================================= */
+
+function csvStatus(v){
+
+  return [
+    "☑",
+    "✓",
+    "✔",
+    "完成",
+    "Done",
+    "done",
+    "TRUE",
+    "True",
+    "1",
+    "yes",
+    "Yes"
+  ].includes(
+    String(v).trim()
+  );
+}
+
+
+function isDone(p,t,m){
+
+  const r=csvJourney.find(
+    x=>
+      x.Trainee_ID===p &&
+      x.Item===t &&
+      String(parseInt(x.Month,10))===String(m)
+  );
+
+  return !!(
+    r &&
+    csvStatus(r.Status)
+  );
+}
+
+
+function tempDone(p,t,m){
+
+  const k=
+    p+"|"+t+"|"+m;
+
+  const z=
+    sessionStorage.getItem(
+      "pgy_temp_v2_"+k
+    );
+
+  return z==="1"
+    ||
+    (
+      z===null &&
+      isDone(p,t,m)
+    );
+}
+
+
+function toggle(p,t,m){
+
+  const k=
+    p+"|"+t+"|"+m;
+
+  const next=
+    !tempDone(p,t,m);
+
+  sessionStorage.setItem(
+    "pgy_temp_v2_"+k,
+    next?"1":"0"
+  );
+
+  render();
+}
+
+
+/* =========================================================
+   Person
+========================================================= */
+
+function person(){
+
+  return people.find(
+    p=>p.id===selected
+  ) || people[0];
+}
+
+
+/* =========================================================
+   Summary
+========================================================= */
+
+function summary(p){
+
+  const m=pgyMonth(p.start);
+
+  let n=0;
+  let c=0;
+
+  tasks.forEach(t=>{
+
+    for(
+      let mm=1;
+      mm<=m;
+      mm++
+    ){
+
+      if(planned(t[2],mm)){
+
+        n++;
+
+        if(
+          tempDone(
+            p.id,
+            t[1],
+            mm
+          )
+        ){
+          c++;
+        }
+
+      }
+
+    }
+
+  });
+
+  return{
+    n,
+    c,
+    rate:n
+      ?Math.round(c/n*100)
+      :0,
+    m
+  };
+}
+
+
+function badge(s){
+
+  return s.rate>=90
+
+    ?'<span class="badge g">🟢 正常</span>'
+
+    :s.rate>=70
+
+    ?'<span class="badge y">🟡 追蹤</span>'
+
+    :'<span class="badge o">🟠 需處理</span>';
+}
+
+
+/* =========================================================
+   PGY Select
+========================================================= */
+
+function sel(className=""){
+
+  return `
+  <select
+    class="${className}"
+    onchange="selectPerson(this.value)"
+  >
+    ${
+      people.map(p=>
+        `
+        <option
+          value="${p.id}"
+          ${p.id===selected?"selected":""}
+        >
+          ${p.id}｜${p.name}
+        </option>
+        `
+      ).join("")
+    }
+  </select>
+  `;
+}
+
+
+/* =========================================================
+   Page 1
+========================================================= */
+
+function overview(){
+
+  /* =======================================================
+     STEP 1｜首頁改為 Mentor Alert
+     24M Learning Journey 保留在 Page 3 / 個人 PGY
+  ======================================================= */
+
+  const categories=[
+    "專業課程",
+    "技術考評",
+    "EPA",
+    "Mini-CEX",
+    "CbD",
+    "IPD",
+    "導師訪談",
+    "CCC"
+  ];
+
+  function categoryOf(t){
+
+    const c=t[0];
+    const n=t[1];
+
+    if(c==="EPA"){
+      return "EPA";
+    }
+
+    if(c==="CCC"){
+      return "CCC";
+    }
+
+    if(c==="導師"){
+      return "導師訪談";
+    }
+
+    if(c==="技術評核"){
+      return "技術考評";
+    }
+
+    if(c==="評核" && /Mini-CEX/i.test(n)){
+      return "Mini-CEX";
+    }
+
+    if(c==="評核" && /CBD|PBD/i.test(n)){
+      return "CbD";
+    }
+
+    if(c==="評核" && /IPD|360/i.test(n)){
+      return "IPD";
+    }
+
+    if(c==="專業課程"){
+      return "專業課程";
+    }
+
+    return null;
+  }
+
+
+  function categorySummary(category){
+
+    let plannedCount=0;
+    let doneCount=0;
+
+    people.forEach(p=>{
+
+      const m=pgyMonth(p.start);
+
+      tasks.forEach(t=>{
+
+        if(categoryOf(t)!==category){
+          return;
+        }
+
+        for(let mm=1;mm<=m;mm++){
+
+          if(planned(t[2],mm)){
+
+            plannedCount++;
+
+            if(tempDone(p.id,t[1],mm)){
+              doneCount++;
+            }
+
+          }
+
+        }
+
+      });
+
+    });
+
+    return{
+      planned:plannedCount,
+      done:doneCount,
+      rate:plannedCount
+        ?Math.round(doneCount/plannedCount*100)
+        :0
+    };
+
+  }
+
+
+  const categoryCards=
+    categories.map(category=>{
+
+      const s=categorySummary(category);
+
+      return `
+      <div class="category-card">
+
+        <div class="category-head">
+
+          <span>
+            ${category}
+          </span>
+
+          <span class="category-rate">
+            ${s.rate}%
+          </span>
+
+        </div>
+
+        <div class="category-bar">
+          <span style="width:${s.rate}%"></span>
+        </div>
+
+        <div
+          style="
+          margin-top:7px;
+          font-size:12px;
+          color:#667085
+          "
+        >
+          已完成 ${s.done}／應完成 ${s.planned}
+        </div>
+
+      </div>
+      `;
+
+    }).join("");
+
+
+  /* =======================================================
+     本月 Alert Action Center
+     顯示所有在訓 PGY 的目前月份任務
+  ======================================================= */
+
+  const actionRows=[];
+
+  people.forEach(p=>{
+
+    if(p.status && p.status!=="在訓"){
+      return;
+    }
+
+    const m=pgyMonth(p.start);
+
+    tasks.forEach(t=>{
+
+      if(!planned(t[2],m)){
+        return;
+      }
+
+      const category=categoryOf(t);
+
+      if(!category){
+        return;
+      }
+
+      const done=tempDone(
+        p.id,
+        t[1],
+        m
+      );
+
+      actionRows.push({
+
+        id:p.id,
+        name:p.name,
+        month:m,
+        category,
+        item:t[1],
+        done
+
+      });
+
+    });
+
+  });
+
+
+  actionRows.sort((a,b)=>{
+
+    if(a.done!==b.done){
+      return a.done ? 1 : -1;
+    }
+
+    return a.id.localeCompare(b.id);
+
+  });
+
+
+  const actionHtml=
+    actionRows.length
+
+    ?actionRows.map(x=>`
+
+      <div class="alert-item">
+
+        <div class="alert-person">
+          ${x.id}
+        </div>
+
+        <div class="alert-task">
+
+          ${x.item}
+
+          <small>
+            ${x.name}
+            ｜${x.category}
+            ｜M${String(x.month).padStart(2,"0")}
+          </small>
+
+        </div>
+
+        <div>
+          <span
+            class="
+            status-pill
+            ${x.done
+              ?"status-done"
+              :"status-todo"}
+            "
+          >
+            ${
+              x.done
+              ?"🟢 已完成"
+              :"🔴 待完成"
+            }
+          </span>
+        </div>
+
+        <div
+          style="
+          font-size:12px;
+          color:#667085;
+          text-align:center
+          "
+        >
+          M${String(x.month).padStart(2,"0")}
+        </div>
+
+        <div class="alert-action">
+
+          <button
+            class="btn"
+            onclick="
+              selected='${x.id}';
+              view='mentor';
+              render();
+            "
+          >
+            ${x.done?"查看":"開始"}
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("")
+
+    :`
+      <div class="empty-alert">
+        🎉 目前沒有本月待處理項目。
+      </div>
+    `;
+
+
+  /* =======================================================
+     KPI
+  ======================================================= */
+
+  const total=
+    people.reduce(
+      (a,p)=>a+summary(p).n,
+      0
+    );
+
+  const done=
+    people.reduce(
+      (a,p)=>a+summary(p).c,
+      0
+    );
+
+  const todo=
+    Math.max(
+      0,
+      actionRows.filter(x=>!x.done).length
+    );
+
+  const overdue=0;
+
+
+  return `
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        PGY Mentor Alert
+      </h1>
+
+      <div class="sub">
+        計畫主任總覽｜本月教學、評核與 Mentor Alert
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="alert-summary">
+
+    <div class="alert-summary-card">
+
+      <div class="label">
+        PGY人數
+      </div>
+
+      <div class="alert-number">
+        ${people.length}
+      </div>
+
+    </div>
+
+
+    <div class="alert-summary-card">
+
+      <div class="label">
+        本月待完成
+      </div>
+
+      <div class="alert-number">
+        ${todo}
+      </div>
+
+    </div>
+
+
+    <div class="alert-summary-card">
+
+      <div class="label">
+        目前整體完成率
+      </div>
+
+      <div class="alert-number">
+        ${
+          total
+          ?Math.round(done/total*100)
+          :0
+        }%
+      </div>
+
+    </div>
+
+
+    <div class="alert-summary-card">
+
+      <div class="label">
+        逾期
+      </div>
+
+      <div class="alert-number">
+        ${overdue}
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="action-title">
+
+      <h2>
+        📊 各類完成率
+      </h2>
+
+      <div class="action-note">
+        依目前 PGY Month 累計計算
+      </div>
+
+    </div>
+
+    <div class="category-grid">
+
+      ${categoryCards}
+
+    </div>
+
+  </div>
+
+
+  <div class="card action-card">
+
+    <div class="action-title">
+
+      <div>
+
+        <h2>
+          🔔 Alert Action Center
+        </h2>
+
+        <div class="action-note">
+          本月應完成事項｜點選「開始」進入該學員 Mentor Alert
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="alert-item"
+      style="
+      background:#f7f9fc;
+      font-weight:800;
+      color:#475467
+      "
+    >
+
+      <div>PGY</div>
+
+      <div>應完成項目</div>
+
+      <div style="text-align:center">
+        狀態
+      </div>
+
+      <div style="text-align:center">
+        Month
+      </div>
+
+      <div></div>
+
+    </div>
+
+
+    ${actionHtml}
+
+  </div>
+
+
+  `;
+}
+
+
+
+/* =========================================================
+   Page 2
+========================================================= */
+
+function mentor(){
+
+  const p=person();
+
+  if(!p){
+
+    return `
+    <div class="card">
+      尚無學員資料。
+    </div>
+    `;
+  }
+
+  const s=summary(p);
+  const m=s.m;
+
+
+  const list=
+    tasks
+    .filter(t=>planned(t[2],m))
+    .map(t=>{
+
+      const done=
+        tempDone(
+          p.id,
+          t[1],
+          m
+        );
+
+      return `
+
+      <div class="task">
+
+        <div>
+
+          <b>
+            ${t[1]}
+          </b>
+
+          <small>
+            ${t[0]}
+            ｜M${String(m).padStart(2,"0")}
+            ｜${md(monthDate(p.start,m))}
+          </small>
+
+        </div>
+
+
+        <button
+          class="btn"
+          onclick="
+          toggle(
+            '${p.id}',
+            '${t[1]}',
+            ${m}
+          )
+          "
+        >
+          ${
+            done
+            ?"☑ 已完成"
+            :"☐ 完成"
+          }
+        </button>
+
+      </div>
+
+      `;
+
+    }).join("");
+
+
+  return `
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        Mentor Alert
+      </h1>
+
+      <div class="sub">
+        導師本期工作清單｜CSV 資料
+      </div>
+
+    </div>
+
+    ${sel()}
+
+  </div>
+
+
+  <div class="notice">
+
+    <b>
+      ${p.id}｜${p.name}
+    </b>
+
+   　到職 ${p.start}
+
+   　→　目前
+
+    <b>
+      M${String(m).padStart(2,"0")}
+    </b>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>
+      🔔 本期應完成
+    </h2>
+
+    ${
+      list ||
+      "<p>目前沒有對應任務。</p>"
+    }
+
+  </div>
+
+  `;
+}
+
+
+/* =========================================================
+   Page 3
+========================================================= */
+
+
+/* =========================================================
+   Learning Journey｜專屬項目清單與版面
+   僅影響 Learning Journey 頁面；個人 PGY、首頁與其他功能沿用舊版。
+   月份格為完成勾選，不包含 EPA／Mini-CEX／CbD 等評分控制。
+========================================================= */
+
+const learningTasks=[
+
+  // 前期：0–3M 基礎課程
+  ["基礎課程","基本氧氣治療與溼氣噴霧治療","1-3"],
+  ["基礎課程","低血氧／高二氧化碳／ABG","1-3"],
+  ["基礎課程","Auto-PEEP及處置","1-3"],
+  ["基礎課程","身體評估","1-3"],
+  ["基礎課程","呼吸照護登入系統（VPN）","1-3"],
+  ["EPA 項目","EPA 1｜呼吸器導入照護","1-3"],
+  ["EPA 項目","EPA 5｜氣道清潔照護","1-3"],
+  ["EPA 項目","EPA 6｜低氧呼吸照護","1-3"],
+  ["技術項目","氧氣治療","1-3"],
+  ["技術項目","呼吸器操作","1-3"],
+  ["技術項目","氣道照護","1-3"],
+  ["技術項目","呼吸器管理","1-3"],
+  ["技術項目","小兒呼吸照護","1-3"],
+  ["技術項目","慢性呼吸照護","1-3"],
+  ["技術項目","非侵襲性呼吸器照護","1-3"],
+  ["導師追蹤","每月導師面談","monthly","每月"],
+  ["評核項目","Mini-CEX","quarter","每3個月"],
+  ["評核項目","CBD／PBD","quarter","每3個月"],
+  ["會議項目","CCC能力進度檢視","months:3,9,15,21","M03、M09、M15、M21"],
+  ["會議項目","SIRIPPP 核心能力討論","months:3,9,15,21","M03、M09、M15、M21"],
+  ["會議項目","SIRIPPP 團隊合作討論","months:3,9,15,21","M03、M09、M15、M21"],
+  ["EPA 項目","Ad-hoc EPA","recurring-2-3","每3個月"],
+  ["評核項目","IPD／360°","quarter","每3個月"],
+  ["技術評核","0–3個月技術考","1-3"],
+
+  // 中期：4–12M 進階課程
+  ["進階課程","臨床成人呼吸生理學","4-12"],
+  ["進階課程","胸腔常見疾病介紹","4-12"],
+  ["進階課程","小兒氣道照護","4-12"],
+  ["進階課程","呼吸器分類／操作／脫離（含ATC）","4-12"],
+  ["進階課程","健保相關事宜","4-12"],
+  ["進階課程","BLS／ACLS 學習訓練","4-12"],
+  ["EPA 項目","EPA 3｜氣道手術照護","4-12"],
+  ["EPA 項目","EPA 8｜呼吸器安全照護","4-12"],
+  ["EPA 項目","EPA 9｜呼吸器病人轉送","4-12"],
+  ["EPA 項目","EPA 10｜慢性呼吸照護","4-12"],
+  ["EPA 項目","EPA 11｜技術管理照護","4-12"],
+  ["技術項目","呼吸器操作與照護","4-12"],
+  ["技術項目","HFOV","4-12"],
+  ["技術項目","iNO","4-12"],
+  ["技術項目","肺部復健／呼吸復健","4-12"],
+  ["技術項目","非侵襲性呼吸器照護","4-12"],
+  ["技術項目","呼吸照護評估","4-12"],
+  ["技術評核","4–12個月技術評核","4-12"],
+
+  // 後期：13–24M 重症課程
+  ["重症照護","手術前後呼吸照護","13-24"],
+  ["重症照護","COPD呼吸照護","13-24"],
+  ["重症照護","ARDS呼吸照護","13-24"],
+  ["重症照護","VAP呼吸照護","13-24"],
+  ["重症照護","呼吸功能改善","13-24"],
+  ["重症照護","HFOV呼吸照護","13-24"],
+  ["重症照護","iNO呼吸照護","13-24"],
+  ["重症照護","Prone Position 通氣照護","13-24"],
+  ["重症照護","Lung Recruitment Management","13-24"],
+  ["EPA 項目","EPA 7｜呼吸器脫離照護","13-24"],
+  ["技術項目","呼吸器操作與照護","13-24"],
+  ["技術項目","器官保護策略","13-24"],
+  ["技術項目","文書專題／臨床紀錄","13-24"],
+  ["技術評核","13–24個月技術評核","13-24"],
+  ["結訓項目","結訓前能力盤點","22-24"],
+  ["結訓項目","Final Assessment／結訓確認","24-24"]
+];
+
+
+function isLearningTaskPlanned(plan,m){
+  if(String(plan).startsWith("months:")){
+    const months=String(plan).slice(7).split(",").map(Number);
+    return months.includes(m);
+  }
+  return planned(plan,m);
+}
+
+
+
+/* 新清單名稱若與既有 CSV 項目略有差異，沿用原始完成紀錄。 */
+function learningTaskSourceItem(item){
+  const aliases={
+    "HFOV呼吸照護":"HFOV臨床應用",
+    "iNO呼吸照護":"iNO臨床應用",
+    "Prone Position 通氣照護":"Prone Position Ventilation"
+  };
+  return aliases[item] || item;
+}
+
+
+function learningTaskDone(p,item,m){
+  const key=p+"|"+item+"|"+m;
+  const override=sessionStorage.getItem("pgy_temp_v2_"+key);
+  if(override!==null){
+    return override==="1";
+  }
+
+  const sourceItem=learningTaskSourceItem(item);
+  const r=csvJourney.find(
+    x=>x.Trainee_ID===p &&
+       x.Item===sourceItem &&
+       String(parseInt(x.Month,10))===String(m)
+  );
+  return !!(r && csvStatus(r.Status));
+}
+
+
+function toggleLearningTask(p,item,m){
+  const next=!learningTaskDone(p,item,m);
+  const key=p+"|"+item+"|"+m;
+  sessionStorage.setItem("pgy_temp_v2_"+key,next?"1":"0");
+  render();
+}
+
+function journey(){
+
+  const p=person();
+
+  if(!p){
+    return `<div class="card">尚無學員資料。</div>`;
+  }
+
+  const m=pgyMonth(p.start);
+
+  const rows=learningTasks.map(t=>{
+
+    let c=`
+      <div class="jr">
+        <div class="table-item-name"><b>${t[1]}</b></div>
+        <div>${t[0]}</div>
+        <div>${t[3] || t[2]}</div>
+    `;
+
+    for(let mm=1;mm<=24;mm++){
+
+      // 保留 CSV 既有完成紀錄；新增清單項目依所屬階段列入計畫月份。
+      const sourceItem=learningTaskSourceItem(t[1]);
+      const r=csvJourney.find(
+        x=>x.Trainee_ID===p.id &&
+           x.Item===sourceItem &&
+           String(parseInt(x.Month,10))===String(mm)
+      );
+
+      const isPlanned=!!r || isLearningTaskPlanned(t[2],mm);
+      const isDone=isPlanned ? learningTaskDone(p.id,t[1],mm) : false;
+      const cls=`mc ${isPlanned?"planned":""} ${isDone?"done":""} ${mm===m?"today":""}`;
+      const mark=isDone ? "✓" : isPlanned ? "☐" : "";
+
+      c+=`
+        <div class="${cls}"
+          ${isPlanned ? `onclick="toggleLearningTask('${p.id}','${t[1].replace(/'/g,"&#39;")}',${mm})"` : ""}>
+          ${mark}
+        </div>
+      `;
+    }
+
+    // 完成率是項目完成進度，不是評分；不提供等級或分數輸入。
+    const plannedCount=Array.from({length:24},(_,i)=>i+1)
+      .filter(mm=>isLearningTaskPlanned(t[2],mm)).length;
+    const doneCount=Array.from({length:24},(_,i)=>i+1)
+      .filter(mm=>isLearningTaskPlanned(t[2],mm) && learningTaskDone(p.id,t[1],mm)).length;
+
+    c+=`<div><b>${plannedCount ? Math.round(doneCount/plannedCount*100) : 0}%</b></div></div>`;
+    return c;
+  }).join("");
+
+  const heads=`
+    <div class="jh">
+      <div>學習／評核項目</div>
+      <div>類別</div>
+      <div>計畫時間</div>
+      ${Array.from({length:24},(_,i)=>`<div>M${String(i+1).padStart(2,"0")}</div>`).join("")}
+      <div>完成率</div>
+    </div>
+  `;
+
+  return `
+    <div class="learning-journey-page">
+      <div class="top">
+        <div>
+          <h1>Learning Journey</h1>
+          <div class="sub">24M 工程進度表｜紅框＝目前 PGY 月份</div>
+        </div>
+
+        <div class="journey-person-tools">
+          ${sel("journey-select")}
+          <div class="journey-notice">
+            <strong>${p.id}｜${p.name}</strong>
+            <span>到職日 ${p.start}</span>
+            <span class="current-month">目前 <b>M${String(m).padStart(2,"0")}</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="journey">
+        ${heads}
+        ${rows}
+      </div>
+    </div>
+  `;
+}
+
+
+function journeyLegacy(){
+
+  const p=person();
+
+  if(!p){
+
+    return `
+    <div class="card">
+      尚無學員資料。
+    </div>
+    `;
+  }
+
+  const m=pgyMonth(p.start);
+
+
+  const rows=
+    tasks.map(t=>{
+
+      let pc=0;
+      let dc=0;
+
+
+      let c=`
+
+      <div class="jr">
+
+        <div>
+          <b>
+            ${t[1]}
+          </b>
+        </div>
+
+        <div>
+          ${t[0]}
+        </div>
+
+        <div>
+          ${t[2]}
+        </div>
+      `;
+
+
+      for(
+        let mm=1;
+        mm<=24;
+        mm++
+      ){
+
+        const r=
+          csvJourney.find(
+            x=>
+              x.Trainee_ID===p.id &&
+              x.Item===t[1] &&
+              String(
+                parseInt(x.Month,10)
+              )===String(mm)
+          );
+
+
+        const isPlanned=!!r;
+
+        const isDone=
+          isPlanned
+          ?tempDone(
+            p.id,
+            t[1],
+            mm
+          )
+          :false;
+
+
+        if(isPlanned){
+          pc++;
+        }
+
+        if(isDone){
+          dc++;
+        }
+
+
+        const cls=`
+
+          mc
+
+          ${isPlanned?"planned":""}
+
+          ${isDone?"done":""}
+
+          ${mm===m?"today":""}
+
+        `;
+
+
+        const mark=
+          isDone
+          ?"✓"
+          :isPlanned
+          ?"☐"
+          :"";
+
+
+        c+=`
+
+        <div
+          class="${cls}"
+          onclick="
+          toggle(
+            '${p.id}',
+            '${t[1]}',
+            ${mm}
+          )
+          "
+        >
+          ${mark}
+        </div>
+
+        `;
+
+      }
+
+
+      return c+`
+
+        <div>
+
+          <b>
+            ${
+              pc
+              ?Math.round(dc/pc*100)
+              :0
+            }%
+          </b>
+
+        </div>
+
+      </div>
+
+      `;
+
+    }).join("");
+
+
+  const heads=
+
+  `
+  <div class="jh">
+
+    <div>
+      學習／評核項目
+    </div>
+
+    <div>
+      類別
+    </div>
+
+    <div>
+      計畫時間
+    </div>
+
+    ${
+      Array
+      .from(
+        {length:24},
+        (_,i)=>
+          `
+          <div>
+            M${String(i+1).padStart(2,"0")}
+          </div>
+          `
+      )
+      .join("")
+    }
+
+    <div>
+      完成率
+    </div>
+
+  </div>
+  `;
+
+
+  return `
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        Learning Journey
+      </h1>
+
+      <div class="sub">
+        24M 工程進度表｜紅框＝目前PGY月份
+      </div>
+
+    </div>
+
+    ${sel()}
+
+  </div>
+
+
+  <div class="notice">
+
+    <b>
+      ${p.id}｜${p.name}
+    </b>
+
+   　到職日 ${p.start}
+
+   　｜目前
+
+    <b>
+      M${String(m).padStart(2,"0")}
+    </b>
+
+  </div>
+
+
+  <div class="journey">
+
+    ${heads}
+
+    ${rows}
+
+  </div>
+
+  `;
+}
+
+
+/* =========================================================
+   Page 4
+========================================================= */
+
+function individual(){
+
+  const p=person();
+
+  if(!p){
+
+    return `
+    <div class="card">
+      尚無學員資料。
+    </div>
+    `;
+  }
+
+  const s=summary(p);
+
+
+  return `
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        個人 PGY
+      </h1>
+
+      <div class="sub">
+        單一學員完整學習歷程
+      </div>
+
+    </div>
+
+    ${sel()}
+
+  </div>
+
+
+  <div class="grid">
+
+    <div class="card">
+
+      <div class="label">
+        PGY
+      </div>
+
+      <div
+        class="kpi"
+        style="font-size:20px"
+      >
+        ${p.id}
+      </div>
+
+      ${p.name}
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        到職日
+      </div>
+
+      <div
+        class="kpi"
+        style="font-size:18px"
+      >
+        ${p.start}
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        目前PGY Month
+      </div>
+
+      <div class="kpi">
+        M${String(s.m).padStart(2,"0")}
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="label">
+        完成率
+      </div>
+
+      <div class="kpi">
+        ${s.rate}%
+      </div>
+
+    </div>
+
+  </div>
+
+
+  ${journeyLegacy()}
+
+  `;
+}
+
+
+/* =========================================================
+   Page 5
+   新增 PGY
+========================================================= */
+
+function addPGY(){
+
+  const savedUrl=
+    localStorage.getItem(
+      "PGY_POWER_AUTOMATE_URL"
+    ) || "";
+
+
+  return `
+
+  <div class="top">
+
+    <div>
+
+      <h1>
+        ➕ 新增 PGY
+      </h1>
+
+      <div class="sub">
+        新增 PGY → Power Automate → SharePoint
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="notice">
+
+    <b>
+      ➕ 新增 PGY
+    </b>
+
+    <br>
+
+    新增 PGY 資料會透過
+    <b>Power Automate</b>
+    寫入 SharePoint。
+
+    <br>
+
+    原本 4 個 Dashboard 頁面與 GitHub CSV
+    讀取功能維持不變。
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="add-title">
+      PGY 基本資料
+    </div>
+
+
+    <div class="formgrid">
+
+
+      <div class="field">
+
+        <label>
+          Trainee ID
+        </label>
+
+        <input
+          id="v2_id"
+          placeholder="例如 RT-POC-002"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          學員姓名
+        </label>
+
+        <input
+          id="v2_name"
+          placeholder="例如 POC測試2"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          到職日
+        </label>
+
+        <input
+          id="v2_start"
+          type="date"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          預計結訓日期
+        </label>
+
+        <input
+          id="v2_end"
+          type="date"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Mentor
+        </label>
+
+        <input
+          id="v2_mentor"
+          placeholder="例如 Mentor測試"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          PGY狀態
+        </label>
+
+        <select id="v2_pgy">
+
+          <option>
+            在訓
+          </option>
+
+          <option>
+            結訓
+          </option>
+
+          <option>
+            提前結訓
+          </option>
+
+          <option>
+            離訓
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div style="margin-top:22px">
+
+      <div class="section-title">
+        Power Automate HTTP URL
+      </div>
+
+
+      <input
+        id="v2_url"
+        type="url"
+        value="${savedUrl}"
+        placeholder="請貼上已驗證成功的 Power Automate HTTP URL"
+      >
+
+
+      <div class="url-note">
+
+        ⚠️
+        Power Automate URL
+        不會寫入 GitHub HTML。
+
+        <br>
+
+        本頁只會把 URL 儲存在
+        <b>目前瀏覽器的 localStorage</b>，
+        供你下次使用。
+
+      </div>
+
+    </div>
+
+
+    <div class="add-actions">
+
+      <button
+        class="btn btn-primary"
+        onclick="submitPGY()"
+      >
+        🚀 新增 PGY
+      </button>
+
+
+      <button
+        class="btn btn-secondary"
+        onclick="clearPGYForm()"
+      >
+        清除
+      </button>
+
+    </div>
+
+
+    <div id="pgy_submit_result"></div>
+
+  </div>
+
+  `;
+}
+
+
+/* =========================================================
+   新增 PGY → Power Automate
+========================================================= */
+
+async function submitPGY(){
+
+  const id=
+    document
+    .getElementById("v2_id")
+    .value
+    .trim();
+
+
+  const name=
+    document
+    .getElementById("v2_name")
+    .value
+    .trim();
+
+
+  const start=
+    document
+    .getElementById("v2_start")
+    .value;
+
+
+  const end=
+    document
+    .getElementById("v2_end")
+    .value;
+
+
+  const mentor=
+    document
+    .getElementById("v2_mentor")
+    .value
+    .trim();
+
+
+  const status=
+    document
+    .getElementById("v2_pgy")
+    .value;
+
+
+  const url=
+    document
+    .getElementById("v2_url")
+    .value
+    .trim();
+
+
+  const result=
+    document
+    .getElementById(
+      "pgy_submit_result"
+    );
+
+
+  /* ===== 基本檢查 ===== */
+
+  if(!id){
+
+    result.innerHTML=`
+      <div class="fail-box">
+        ⚠️ 請輸入 Trainee ID。
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if(!name){
+
+    result.innerHTML=`
+      <div class="fail-box">
+        ⚠️ 請輸入學員姓名。
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if(!start){
+
+    result.innerHTML=`
+      <div class="fail-box">
+        ⚠️ 請輸入到職日。
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if(!url){
+
+    result.innerHTML=`
+      <div class="fail-box">
+        ⚠️ 請輸入 Power Automate HTTP URL。
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /* ===== 保存 URL ===== */
+
+  localStorage.setItem(
+    "PGY_POWER_AUTOMATE_URL",
+    url
+  );
+
+
+  /* ===== Payload ===== */
+
+  const payload={
+
+    Title:id,
+
+    學員姓名:name,
+
+    到職日:start,
+
+    預計結訓日期:end,
+
+    Mentor:mentor,
+
+    PGY狀態:status
+
+  };
+
+
+  /* ===== UI ===== */
+
+  result.innerHTML=`
+    <div class="notice">
+      ⏳ 正在送出 PGY 資料……
+    </div>
+  `;
+
+
+  try{
+
+    const response=
+      await fetch(
+        url,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(payload)
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "HTTP "+response.status
+      );
+
+    }
+
+
+    result.innerHTML=`
+
+      <div class="success-box">
+
+        <b>
+          ✅ PGY 新增請求已成功送出
+        </b>
+
+        <br><br>
+
+        Trainee ID：
+        <b>${id}</b>
+
+        <br>
+
+        學員姓名：
+        <b>${name}</b>
+
+        <br>
+
+        Power Automate
+        已收到資料。
+
+        <br><br>
+
+        請由 Power Automate
+        繼續寫入 SharePoint。
+
+      </div>
+
+    `;
+
+
+    /* 保留 URL，但清空個人資料 */
+
+    document
+      .getElementById("v2_id")
+      .value="";
+
+    document
+      .getElementById("v2_name")
+      .value="";
+
+    document
+      .getElementById("v2_start")
+      .value="";
+
+    document
+      .getElementById("v2_end")
+      .value="";
+
+    document
+      .getElementById("v2_mentor")
+      .value="";
+
+    document
+      .getElementById("v2_pgy")
+      .value="在訓";
+
+
+  }catch(error){
+
+    console.error(
+      "Power Automate error:",
+      error
+    );
+
+
+    result.innerHTML=`
+
+      <div class="fail-box">
+
+        <b>
+          ❌ PGY 新增失敗
+        </b>
+
+        <br><br>
+
+        ${error.message}
+
+        <br><br>
+
+        請確認：
+
+        <br>
+
+        1. Power Automate HTTP URL 是否正確
+
+        <br>
+
+        2. Power Automate Flow 是否正在使用
+
+        <br>
+
+        3. HTTP Trigger 是否設定正確
+
+        <br>
+
+        4. Power Automate 是否已成功連線 SharePoint
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   清除新增 PGY 表單
+========================================================= */
+
+function clearPGYForm(){
+
+  const ids=[
+    "v2_id",
+    "v2_name",
+    "v2_start",
+    "v2_end",
+    "v2_mentor"
+  ];
+
+
+  ids.forEach(id=>{
+
+    const el=
+      document.getElementById(id);
+
+    if(el){
+      el.value="";
+    }
+
+  });
+
+
+  const pgy=
+    document.getElementById(
+      "v2_pgy"
+    );
+
+  if(pgy){
+    pgy.value="在訓";
+  }
+
+
+  const result=
+    document.getElementById(
+      "pgy_submit_result"
+    );
+
+  if(result){
+    result.innerHTML="";
+  }
+
+}
+
+
+/* =========================================================
+   Page Navigation
+========================================================= */
+
+function selectPerson(id){
+
+  selected=id;
+
+  if(view==="overview"){
+    view="individual";
+  }
+
+  render();
+}
+
+
+function render(){
+
+  document
+    .querySelectorAll(".nav button")
+    .forEach(b=>{
+
+      b.classList.toggle(
+        "active",
+        b.dataset.view===view
+      );
+
+    });
+
+
+  const app=
+    document.getElementById(
+      "app"
+    );
+
+
+  if(view==="overview"){
+
+    app.innerHTML=
+      overview();
+
+  }
+
+  else if(view==="mentor"){
+
+    app.innerHTML=
+      mentor();
+
+  }
+
+  else if(view==="journey"){
+
+    app.innerHTML=
+      journey();
+
+  }
+
+  else if(view==="individual"){
+
+    app.innerHTML=
+      individual();
+
+  }
+
+  else if(view==="addpgy"){
+
+    app.innerHTML=
+      addPGY();
+
+  }
+
+}
+
+
+/* =========================================================
+   Navigation Event
+========================================================= */
+
+document
+  .querySelectorAll(".nav button")
+  .forEach(b=>{
+
+    b.onclick=()=>{
+
+      view=
+        b.dataset.view;
+
+      render();
+
+    };
+
+  });
+
+
+/* =========================================================
+   CSV Boot
+========================================================= */
+
+async function bootCSV(){
+
+  try{
+
+    people=
+      (
+        await loadCSV(
+          "pgy_master.csv"
+        )
+      )
+      .map(x=>({
+
+        id:x.Trainee_ID,
+
+        name:x.Name,
+
+        start:x.Start_Date,
+
+        end:x.End_Date||"",
+
+        role:x.Role||"PGY",
+
+        status:x.Status||"在訓"
+
+      }));
+
+
+    csvJourney=
+      await loadCSV(
+        "learning_journey.csv"
+      );
+
+
+    csvAssessment=
+      await loadCSV(
+        "assessment.csv"
+      );
+
+
+    csvAlerts=
+      await loadCSV(
+        "mentor_alert.csv"
+      );
+
+
+    selected=
+      selected &&
+      people.some(
+        p=>p.id===selected
+      )
+      ?selected
+      :(people[0]?.id||"");
+
+
+    render();
+
+  }
+
+
+  catch(e){
+
+    console.error(
+      "CSV loading failed:",
+      e
+    );
+
+
+    document
+      .getElementById("app")
+      .innerHTML=`
+
+      <div class="error">
+
+        <b>
+          ⚠️ CSV 讀取失敗
+        </b>
+
+        <p>
+          ${e.message}
+        </p>
+
+        <p>
+
+          請確認 GitHub 的
+          <b>/data/</b>
+          內存在：
+
+          <br><br>
+
+          pgy_master.csv
+
+          <br>
+
+          learning_journey.csv
+
+          <br>
+
+          assessment.csv
+
+          <br>
+
+          mentor_alert.csv
+
+        </p>
+
+      </div>
+
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   啟動
+========================================================= */
+
+render();
+
+bootCSV();
+
+</script>
+
+</body>
+</html>
