@@ -251,35 +251,47 @@ th{
 }
 
 /* Learning Journey：凍結前 3 欄 */
-.jh>div:nth-child(1),
-.jr>div:nth-child(1){
-  position:sticky;
-  left:0;
-  z-index:3;
-  background:white;
+.jh > div:nth-child(1),
+.jr > div:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: white;
 }
 
-.jh>div:nth-child(2),
-.jr>div:nth-child(2){
-  position:sticky;
-  left:240px;
-  z-index:3;
-  background:white;
+.jh > div:nth-child(2),
+.jr > div:nth-child(2) {
+  position: sticky;
+  left: 240px;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  z-index: 3;
+  background: white;
 }
 
-.jh>div:nth-child(3),
-.jr>div:nth-child(3){
-  position:sticky;
-  left:345px;
-  z-index:3;
-  background:white;
+.jh > div:nth-child(3),
+.jr > div:nth-child(3) {
+  position: sticky;
+  left: 320px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+  z-index: 3;
+  background: white;
 }
 
-/* 凍結欄標題維持原本深藍底、白字 */
-.jh>div:nth-child(-n+3){
-  background:var(--navy);
-  color:white;
-  z-index:5;
+/* 標題列維持深藍底、白字 */
+.jh > div:nth-child(-n+3) {
+  background: var(--navy);
+  color: white;
+  z-index: 5;
+}
+
+/* 凍結欄分隔線 */
+.jh > div:nth-child(3),
+.jr > div:nth-child(3) {
+  box-shadow: 2px 0 3px #17365d18;
 }
 
 /* 凍結欄與月份區隔 */
