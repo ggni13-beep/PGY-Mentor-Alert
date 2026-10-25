@@ -250,6 +250,43 @@ th{
   font-weight:700
 }
 
+
+/* Learning Journey：24M 三階段與週期性評核 */
+.journey-stages{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(260px,1fr));
+  gap:14px;
+  margin:18px 0
+}
+.journey-stage{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 7px 22px #17365d10;
+  min-width:0
+}
+.journey-stage h3{margin:0 0 6px;color:var(--navy);font-size:17px}
+.journey-stage .stage-range{font-size:12px;font-weight:700;color:#475467;margin-bottom:10px}
+.journey-stage ul{margin:8px 0 0;padding-left:19px}
+.journey-stage li{font-size:13px;line-height:1.7;margin-bottom:3px}
+.journey-stage .stage-label{font-size:12px;font-weight:700;color:#667085;margin-top:10px}
+.periodic-wrap{
+  margin-top:18px;background:#fff;border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 7px 22px #17365d10;overflow:auto
+}
+.periodic-wrap h2{margin:0;padding:16px 16px 8px;color:var(--navy);font-size:20px}
+.periodic-note{padding:0 16px 12px;color:#667085;font-size:12px}
+.periodic-table{width:100%;border-collapse:collapse;min-width:940px}
+.periodic-table th,.periodic-table td{padding:10px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:13px;vertical-align:top}
+.periodic-table th{background:var(--navy);color:#fff;white-space:nowrap}
+.periodic-table td:first-child{font-weight:700;white-space:nowrap}
+.periodic-months{color:#344054}
+.periodic-frequency{color:#475467;white-space:nowrap}
+@media(max-width:1050px){
+  .journey-stages{grid-template-columns:1fr}
+}
+
 /* Learning Journey：凍結前 3 欄 */
 .jh>div:nth-child(1),
 .jr>div:nth-child(1){
@@ -1971,6 +2008,114 @@ function journey(){
 
   </div>
 
+  ${journeyStages()}
+
+  ${periodicAssessmentTable()}
+
+  `;
+}
+
+
+/* =========================================================
+   Learning Journey：三階段課程與週期性評核
+========================================================= */
+
+function journeyStages(){
+
+  const stages=[
+    {
+      title:"第一階段｜基礎課程",
+      range:"M01–M03｜基礎建立與技術考核",
+      courses:[
+        "基本氧氣治療與濕氣／噴霧治療",
+        "低血氧、高二氧化碳與 ABG 判讀",
+        "Auto-PEEP 與處置",
+        "身體評估與呼吸器基本操作",
+        "呼吸照護登入系統（VPN）"
+      ],
+      training:[
+        "管路照護、呼吸器測試與氣道照護",
+        "小兒照護、氧療相關技術與健保呼吸器",
+        "EPA 1、EPA 5、EPA 6；完成 0–3 個月技術評核"
+      ]
+    },
+    {
+      title:"第二階段｜進階課程",
+      range:"M04–M12｜臨床整合與能力深化",
+      courses:[
+        "臨床成人呼吸生理學與胸腔常見疾病",
+        "小兒呼吸照護相關課程",
+        "呼吸器操作、脫離與 ATC",
+        "健保及呼吸照護相關課程",
+        "BLS／ACLS 相關課程"
+      ],
+      training:[
+        "保護性通氣策略、HFOV、iNO 與肺復張術",
+        "氣道照護 1、呼吸器照護 1",
+        "EPA 3、EPA 8、EPA 9、EPA 10、EPA 11；完成 4–12 個月技術評核"
+      ]
+    },
+    {
+      title:"第三階段｜重症課程",
+      range:"M13–M24｜重症應用與結訓準備",
+      courses:[
+        "手術前後呼吸照護、COPD 呼吸照護",
+        "ARDS 與 VAP 預防照護",
+        "呼吸功能改善照護",
+        "HFOV、iNO 臨床應用",
+        "Prone Position、Lung Recruitment"
+      ],
+      training:[
+        "技術總複習、氣道照護 2、文書教學",
+        "EPA 7 與臨床情境整合",
+        "完成 13–24 個月技術評核、結訓前能力盤點與 Final Assessment"
+      ]
+    }
+  ];
+
+  return `
+  <div class="journey-stages" aria-label="24個月培訓三階段">
+    ${stages.map(stage=>`
+      <section class="journey-stage">
+        <h3>${stage.title}</h3>
+        <div class="stage-range">${stage.range}</div>
+        <div class="stage-label">課程內容</div>
+        <ul>${stage.courses.map(x=>`<li>${x}</li>`).join("")}</ul>
+        <div class="stage-label">技術／專業訓練</div>
+        <ul>${stage.training.map(x=>`<li>${x}</li>`).join("")}</ul>
+      </section>
+    `).join("")}
+  </div>
+  `;
+}
+
+
+function periodicAssessmentTable(){
+
+  const records=[
+    ["導師主責評核","每月 M01–M24","每月","依當月學習進度確認任務、回饋與待改善事項"],
+    ["Mini-CEX","M03、M06、M09、M12、M15、M18、M21、M24","每 3 個月","臨床操作與照護表現評核"],
+    ["CBD／PBD","M03、M06、M09、M12、M15、M18、M21、M24","每 3 個月","以病例討論／問題導向討論評估臨床推理"],
+    ["IPD／360°","M03、M06、M09、M12、M15、M18、M21、M24","每 3 個月","跨專業合作與臨床溝通回饋"],
+    ["CCC 討論會／能力進度檢視","M03、M06、M09、M12、M15、M18、M21、M24","每 3 個月","綜整學員能力、評核證據與後續學習計畫"],
+    ["SIRIPPP 核心能力評核","M03、M09、M15、M21","每 6 個月","追蹤核心能力進展與需要加強的面向"],
+    ["SIRIPPP 臨床情境評核","M03、M09、M15、M21","每 6 個月","依臨床情境確認能力與安全照護表現"],
+    ["EPA 評核","依各 EPA 項目規劃，每項完成 3 次","依 EPA 項目","保留 EPA1、3、5、6、7、8、9、10、11 的評核紀錄"],
+    ["結訓前能力盤點","M22–M24","結訓前","確認未完成項目、能力證據與補強計畫"],
+    ["Final Assessment／結訓確認","M24","結訓時","完成最終評核與結訓確認"]
+  ];
+
+  return `
+  <section class="periodic-wrap">
+    <h2>週期性評核與教學紀錄</h2>
+    <div class="periodic-note">依 24 個月培訓週期排列；實際執行日期、評核者、結果及回饋仍以個別評核紀錄為準。</div>
+    <table class="periodic-table">
+      <thead><tr><th>評核／教學項目</th><th>預定月份</th><th>頻率</th><th>紀錄重點</th></tr></thead>
+      <tbody>
+        ${records.map(r=>`<tr><td>${r[0]}</td><td class="periodic-months">${r[1]}</td><td class="periodic-frequency">${r[2]}</td><td>${r[3]}</td></tr>`).join("")}
+      </tbody>
+    </table>
+  </section>
   `;
 }
 
